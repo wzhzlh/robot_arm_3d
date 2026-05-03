@@ -1,0 +1,8 @@
+CompileFlags:
+  Add:
+    - -I"D:\HRAppStoreDownload\ARM\ARMCC\include"
+    - -I"D:\HRAppStoreDownload\ARM\ARMCC\include\rw"
+  Remove: []
+  CompilationDatabase: ./build/robot_arm_3d
+Diagnostics:
+  Suppress: "*"

@@ -1,0 +1,49 @@
+#include "FreeRTOS.h"
+#include "task_init.h"
+#include "start_task.h"
+#include "math.h"
+
+TaskHandle_t start_task_Handle;
+TaskHandle_t main_task_Handle;
+TaskHandle_t arm_control_task_Handle;
+TaskHandle_t comm_task_Handle;  
+TaskHandle_t sensor_task_Handle;
+void task_init()
+{
+	vPortEnterCritical();
+
+	xTaskCreate(requirement_1,
+        "requirement_1",
+         256,
+         NULL,
+         4,
+         &requirement_1_Handle);
+	xTaskCreate(requirement_2,
+         "requirement_2",
+          256,
+          NULL,
+          5,
+          &requirement_2_Handle);
+	xTaskCreate(requirement_3,
+        "requirement_3",
+         256,
+         NULL,
+         4,
+         &requirement_3_Handle);
+
+	xTaskCreate(requirement_4,
+        "requirement_4",
+         512,
+         NULL,
+         2,
+         &requirement_4_Handle);
+				 
+	xTaskCreate(requirement_5,
+        "sensor",       
+         128,
+         NULL,
+         4,
+         &requirement_5_Handle);
+				 
+	      vPortExitCritical();
+}

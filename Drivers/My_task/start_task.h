@@ -1,0 +1,9 @@
+#include "cmsis_os.h"
+
+void requirement_1(void  * argument);
+void requirement_2(void * argument);
+void requirement_3(void  * argument);
+void requirement_4(void  * argument);
+void requirement_5(void  * argument);
+
+
