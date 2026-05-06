@@ -3,7 +3,9 @@ name: robot_arm_3d
 type: ARM
 deviceName: null
 packDir: null
-srcDirs: []
+srcDirs:
+  - ../My_task
+  - ../My_lib
 virtualFolder:
   name: <virtual_root>
   files: []
@@ -71,21 +73,6 @@ virtualFolder:
             - path: ../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
             - path: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
           folders: []
-    - name: lib_task
-      files:
-        - path: ../lib_task/crc_ccitt.c
-        - path: ../lib_task/crc_ccitt.h
-        - path: ../lib_task/drive.c
-        - path: ../lib_task/drive.h
-        - path: ../lib_task/PID_old.c
-        - path: ../lib_task/PID_old.h
-        - path: ../lib_task/start_task.c
-        - path: ../lib_task/start_task.h
-        - path: ../lib_task/commuction.h
-        - path: ../lib_task/commuction.c
-        - path: ../lib_task/task_init.c
-        - path: ../lib_task/task_init.h
-      folders: []
     - name: ::CMSIS
       files: []
       folders: []
@@ -108,11 +95,14 @@ targets:
         - ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F
         - ../Drivers/CMSIS/Device/ST/STM32F4xx/Include
         - ../Drivers/CMSIS/Include
-        - ../lib_task
         - .cmsis/include
         - RTE/_robot_arm_3d
+        - ../My_lib
+        - ../My_task
       libList: []
-    excludeList: []
+    excludeList:
+      - ../My_task/start_task.c
+      - ../My_task/task_init.c
     settings: {}
     toolchain: AC5
     toolchainConfigMap:

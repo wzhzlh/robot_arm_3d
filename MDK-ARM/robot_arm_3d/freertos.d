@@ -45,4 +45,3 @@ robot_arm_3d\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/time
 robot_arm_3d\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 robot_arm_3d\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 robot_arm_3d\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-robot_arm_3d\freertos.o: ..\lib_task\task_init.h

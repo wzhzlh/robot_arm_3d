@@ -21,14 +21,95 @@ Target DLL:      Segger\JL2CM3.dll V2.99.38.0
 Dialog DLL:      TCM.DLL V1.48.0.0
  
 <h2>Project:</h2>
-D:\yuyan\cubide\robot_arm_3d\MDK-ARM\robot_arm_3d.uvprojx
-Project File Date:  04/25/2026
+D:\Desktop\A_T-robot\robot_arm_3d\MDK-ARM\robot_arm_3d.uvprojx
+Project File Date:  05/06/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin'
 Build target 'robot_arm_3d'
-Note: source file '..\lib_task\commuction.c' - object file renamed from 'robot_arm_3d\commuction.o' to 'robot_arm_3d\commuction_1.o'.
-"robot_arm_3d\robot_arm_3d.axf" - 0 Error(s), 0 Warning(s).
+Note: source file '..\My_lib\commuction.c' - object file renamed from 'robot_arm_3d\commuction.o' to 'robot_arm_3d\commuction_1.o'.
+Note: source file '..\My_lib\crc_ccitt.c' - object file renamed from 'robot_arm_3d\crc_ccitt.o' to 'robot_arm_3d\crc_ccitt_1.o'.
+Note: source file '..\My_lib\drive.c' - object file renamed from 'robot_arm_3d\drive.o' to 'robot_arm_3d\drive_1.o'.
+Note: source file '..\My_lib\PID_old.c' - object file renamed from 'robot_arm_3d\PID_old.o' to 'robot_arm_3d\pid_old_1.o'.
+Note: source file '..\My_task\start_task.c' - object file renamed from 'robot_arm_3d\start_task.o' to 'robot_arm_3d\start_task_1.o'.
+Note: source file '..\My_task\task_init.c' - object file renamed from 'robot_arm_3d\task_init.o' to 'robot_arm_3d\task_init_1.o'.
+compiling crc_ccitt.c...
+"no source": Error:  #5: cannot open source input file "..\lib_task\crc_ccitt.c": No such file or directory
+..\lib_task\crc_ccitt.c: 0 warnings, 1 error
+compiling commuction.c...
+"no source": Error:  #5: cannot open source input file "..\lib_task\commuction.c": No such file or directory
+..\lib_task\commuction.c: 0 warnings, 1 error
+compiling task_init.c...
+"no source": Error:  #5: cannot open source input file "..\lib_task\task_init.c": No such file or directory
+..\lib_task\task_init.c: 0 warnings, 1 error
+compiling drive.c...
+"no source": Error:  #5: cannot open source input file "..\lib_task\drive.c": No such file or directory
+..\lib_task\drive.c: 0 warnings, 1 error
+compiling start_task.c...
+"no source": Error:  #5: cannot open source input file "..\lib_task\start_task.c": No such file or directory
+..\lib_task\start_task.c: 0 warnings, 1 error
+compiling PID_old.c...
+"no source": Error:  #5: cannot open source input file "..\lib_task\PID_old.c": No such file or directory
+..\lib_task\PID_old.c: 0 warnings, 1 error
+compiling freertos.c...
+../Core/Src/freertos.c(25): error:  #5: cannot open source input file "commuction.h": No such file or directory
+  #include "commuction.h"
+../Core/Src/freertos.c: 0 warnings, 1 error
+compiling main.c...
+../Core/Src/main.c(72): warning:  #223-D: function "SCB_EnableICache" declared implicitly
+    SCB_EnableICache();
+../Core/Src/main.c(161): error:  #20: identifier "ServoBus_t" is undefined
+  void Arm_Home(ServoBus_t *arm)
+../Core/Src/main.c(164): error:  #20: identifier "HOME_JOINT1" is undefined
+      arm->motor_pos[1] = HOME_JOINT1;
+../Core/Src/main.c(165): error:  #20: identifier "HOME_JOINT2" is undefined
+      arm->motor_pos[2] = HOME_JOINT2;
+../Core/Src/main.c(166): error:  #20: identifier "HOME_JOINT3" is undefined
+      arm->motor_pos[3] = HOME_JOINT3;
+../Core/Src/main.c(169): warning:  #223-D: function "ServoBus_Move_Many" declared implicitly
+      ServoBus_Move_Many(arm, 3, 2000);
+../Core/Src/main.c: 2 warnings, 4 errors
+compiling commuction.c...
+..\My_lib\commuction.h(58): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\My_lib\commuction.c(71): warning:  #223-D: function "ServoBus_ParseReply" declared implicitly
+          ServoBus_ParseReply();
+..\My_lib\commuction.c(83): error:  #159: declaration is incompatible with previous "ServoBus_ParseReply"  (declared at line 71)
+  void ServoBus_ParseReply(void)
+..\My_lib\commuction.c(104): warning:  #181-D: argument is incompatible with corresponding format string conversion
+          sscanf((char *)servo_rx_data, "#%03uP%04u!", &g_servo_id, &g_servo_pwm);
+..\My_lib\commuction.c(104): warning:  #181-D: argument is incompatible with corresponding format string conversion
+          sscanf((char *)servo_rx_data, "#%03uP%04u!", &g_servo_id, &g_servo_pwm);
+..\My_lib\commuction.c(132): warning:  #186-D: pointless comparison of unsigned integer with zero
+      if (servo->target_time < SERVO_TIME_MIN)
+..\My_lib\commuction.c(155): warning:  #186-D: pointless comparison of unsigned integer with zero
+      time = (time < SERVO_TIME_MIN) ? SERVO_TIME_MIN : time;
+..\My_lib\commuction.c: 6 warnings, 1 error
+compiling drive.c...
+..\My_lib\commuction.h(58): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\My_lib\drive.c(74): error:  #147-D: declaration is incompatible with "target_t FK_3D(float, float, float)"  (declared at line 39 of "..\My_lib\drive.h")
+  target_t FK_3D(ServoBus_t *robot_arm)
+..\My_lib\drive.c(97): warning:  #1-D: last line of file ends without a newline
+  }
+..\My_lib\drive.c: 2 warnings, 1 error
+compiling task_init.c...
+..\My_task\task_init.h(3): warning:  #1295-D: Deprecated declaration task_init - give arg types
+  void task_init();
+..\My_task\start_task.h(3): error:  #5: cannot open source input file "drive.h": No such file or directory
+  #include "drive.h"
+..\My_task\task_init.c: 1 warning, 1 error
+compiling start_task.c...
+..\My_task\start_task.c(1): error:  #7: unrecognized token
+  ï»?#include "FreeRTOS.h"
+..\My_task\start_task.c(1): error:  #169: expected a declaration
+  ï»?#include "FreeRTOS.h"
+..\My_task\start_task.c(1): error:  #10: "#" not expected here
+  ï»?#include "FreeRTOS.h"
+..\My_task\start_task.h(3): error:  #5: cannot open source input file "drive.h": No such file or directory
+  #include "drive.h"
+..\My_task\start_task.c: 0 warnings, 4 errors
+"robot_arm_3d\robot_arm_3d.axf" - 18 Error(s), 11 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -51,7 +132,8 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.4.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:00
+Target not created.
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

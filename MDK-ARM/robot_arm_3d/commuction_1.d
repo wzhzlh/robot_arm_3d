@@ -1,5 +1,5 @@
-robot_arm_3d\commuction_1.o: ..\lib_task\commuction.c
-robot_arm_3d\commuction_1.o: ..\lib_task\commuction.h
+robot_arm_3d\commuction_1.o: ..\My_lib\commuction.c
+robot_arm_3d\commuction_1.o: ..\My_lib\commuction.h
 robot_arm_3d\commuction_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 robot_arm_3d\commuction_1.o: ../Core/Inc/stm32f4xx_hal_conf.h
 robot_arm_3d\commuction_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h

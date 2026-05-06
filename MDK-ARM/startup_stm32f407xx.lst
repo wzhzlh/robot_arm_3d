@@ -849,10 +849,11 @@ interwork --depend=robot_arm_3d\startup_stm32f407xx.d -orobot_arm_3d\startup_st
 ARM Macro Assembler    Page 14 
 
 
-m32f407xx.o -I../Core/Inc -I.\RTE\_robot_arm_3d -IC:\Users\Lenovo\AppData\Local
-\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include --predefine="__UVISION_VERSION SE
-TA 534" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --predefine
-="_RTE_ SETA 1" --list=startup_stm32f407xx.lst startup_stm32f407xx.s
+m32f407xx.o -I../Core/Inc -I../Drivers/CMSIS/Include -I.\RTE\_robot_arm_3d -IC:
+\Users\Lenovo\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include --pred
+efine="__UVISION_VERSION SETA 534" --predefine="_RTE_ SETA 1" --predefine="STM3
+2F407xx SETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f407xx.lst start
+up_stm32f407xx.s
 
 
 

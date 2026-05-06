@@ -2,22 +2,6 @@
     "configurations": [
         {
             "name": "robot_arm_3d",
-            "includePath": [
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Core\\Inc",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Drivers\\STM32F4xx_HAL_Driver\\Inc",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Drivers\\STM32F4xx_HAL_Driver\\Inc\\Legacy",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM4F",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Drivers\\CMSIS\\Device\\ST\\STM32F4xx\\Include",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Drivers\\CMSIS\\Include",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\lib_task",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\MDK-ARM",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Core\\Src",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Drivers\\STM32F4xx_HAL_Driver\\Src",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source",
-                "d:\\yuyan\\cubide\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang"
-            ],
             "defines": [
                 "USE_HAL_DRIVER",
                 "STM32F407xx",
@@ -94,7 +78,25 @@
                 "__yield()=",
                 "__vfp_status(x,y)=0"
             ],
-            "intelliSenseMode": "${default}"
+            "intelliSenseMode": "${default}",
+            "includePath": [
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Core\\Inc",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Drivers\\STM32F4xx_HAL_Driver\\Inc",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Drivers\\STM32F4xx_HAL_Driver\\Inc\\Legacy",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM4F",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Drivers\\CMSIS\\Device\\ST\\STM32F4xx\\Include",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Drivers\\CMSIS\\Include",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\lib_task",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\MDK-ARM",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Core\\Src",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Drivers\\STM32F4xx_HAL_Driver\\Src",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\My_lib",
+                "d:\\Desktop\\A_T-robot\\robot_arm_3d\\My_task"
+            ]
         }
     ],
     "version": 4

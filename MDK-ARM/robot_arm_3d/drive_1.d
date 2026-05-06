@@ -1,5 +1,5 @@
-robot_arm_3d\drive_1.o: ..\lib_task\drive.c
-robot_arm_3d\drive_1.o: ..\lib_task\drive.h
+robot_arm_3d\drive_1.o: ..\My_lib\drive.c
+robot_arm_3d\drive_1.o: ..\My_lib\drive.h
 robot_arm_3d\drive_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
 robot_arm_3d\drive_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 robot_arm_3d\drive_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\math.h
@@ -34,6 +34,6 @@ robot_arm_3d\drive_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex
 robot_arm_3d\drive_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 robot_arm_3d\drive_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 robot_arm_3d\drive_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-robot_arm_3d\drive_1.o: ..\lib_task\commuction.h
+robot_arm_3d\drive_1.o: ..\My_lib\commuction.h
 robot_arm_3d\drive_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\string.h
 robot_arm_3d\drive_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdio.h
