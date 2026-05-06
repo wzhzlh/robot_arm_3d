@@ -69,7 +69,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  SCB_EnableICache();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/

@@ -87,17 +87,17 @@ void K230_ParseFrame(uint8_t *buf, uint16_t len)
 /**
  * @brief  HAL库UART接收事件回调（空闲中断自动触发）
  */
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
-{
-    // 只处理K230对应的UART3
-    if(huart == &huart3)
-    {
-        k230_rx_len = size;
-        // 拷贝数据到解析缓冲区
-        memcpy(k230_parse_buf, k230_rx_buf, k230_rx_len);
-        // 解析帧数据
-        K230_ParseFrame(k230_parse_buf, k230_rx_len);
-        // 重启DMA接收，等待下一帧数据
-        K230_UART_Init();
-    }
-}
+//void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
+//{
+//    // 只处理K230对应的UART3
+//    if(huart == &huart3)
+//    {
+//        k230_rx_len = size;
+//        // 拷贝数据到解析缓冲区
+//        memcpy(k230_parse_buf, k230_rx_buf, k230_rx_len);
+//        // 解析帧数据
+//        K230_ParseFrame(k230_parse_buf, k230_rx_len);
+//        // 重启DMA接收，等待下一帧数据
+//        K230_UART_Init();
+//    }
+//}

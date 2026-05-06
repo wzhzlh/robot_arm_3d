@@ -36,6 +36,6 @@ void IK_3D(ServoBus_t *robot_arm);
 void IK_2D(ServoBus_t *robot_arm);
 float clamp(float val, float min, float max);
 uint16_t angle_to_pwm(float angle);
-target_t FK_3D(float theta1, float theta2, float theta3);
+target_t FK_3D(ServoBus_t *robot_arm);
 
 #endif

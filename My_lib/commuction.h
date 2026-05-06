@@ -18,9 +18,10 @@
 
 
 // ==================== 新增：解析后存储的舵机数据 ====================
-uint8_t  g_servo_id = 0;         // 反馈的舵机ID
-uint16_t g_servo_pwm = 0;        // 反馈的PWM值
-uint8_t  g_servo_reply_ok = 0;   // 指令执行成功标志
+extern uint8_t  g_servo_id ;         // 反馈的舵机ID
+extern uint16_t g_servo_pwm;        // 反馈的PWM值
+extern uint8_t  g_servo_reply_ok;   // 指令执行成功标志
+
 _Pragma("pack(1)") // 字节对齐，确保结构体紧凑存储
 // ==================== 坐标结构体 ====================
 typedef struct{
