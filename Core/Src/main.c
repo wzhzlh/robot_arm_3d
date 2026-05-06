@@ -69,7 +69,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  SCB_EnableICache();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -158,7 +158,16 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void Arm_Home(ServoBus_t *arm)
+{
+    // 设定零位目标
+    arm->motor_pos[1] = HOME_JOINT1;
+    arm->motor_pos[2] = HOME_JOINT2;
+    arm->motor_pos[3] = HOME_JOINT3;
 
+    // 慢速回零，2秒更稳
+    ServoBus_Move_Many(arm, 3, 2000);
+}
 /* USER CODE END 4 */
 
 /**

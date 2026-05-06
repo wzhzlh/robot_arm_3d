@@ -22,7 +22,7 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-
+#include "commuction.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -122,6 +122,12 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
+  ServoBus_t robot_arm; 
+    ServoBus_SendCmd("#001PMOD1!");
+    ServoBus_SendCmd("#002PMOD1!");
+    ServoBus_SendCmd("#003PMOD1!");
+    HAL_Delay(100); // 等待舵机响应
+    Arm_Home(&robot_arm);
   for(;;)
   {
     task_init();
@@ -130,7 +136,7 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END StartDefaultTask */
 }
 
-/* Private application code --------------------------------------------------*/
+/* Private application code ------------------------------------------------__*/
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */

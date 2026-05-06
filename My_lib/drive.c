@@ -41,11 +41,11 @@ void IK_2D(ServoBus_t *robot_arm)
     float theta2 = atan2f(z, r) + atan2f(S, C) + M_PI/2;
 
     // 角度转换、偏置、限幅
-    robot_arm->motor[0].motor_pos = theta2 * RAD_TO_ANGLE + robot_arm->motor[0].offset;
-    robot_arm->motor[1].motor_pos = theta3 * RAD_TO_ANGLE + robot_arm->motor[1].offset;
+    robot_arm->motor[1].motor_pos = theta2 * RAD_TO_ANGLE + robot_arm->motor[0].offset;
+    robot_arm->motor[2].motor_pos = theta3 * RAD_TO_ANGLE + robot_arm->motor[1].offset;
 
-    robot_arm->motor[0].motor_pos = clamp(robot_arm->motor[0].motor_pos, THETA2_MIN, THETA2_MAX);
-    robot_arm->motor[1].motor_pos = clamp(robot_arm->motor[1].motor_pos, THETA3_MIN, THETA3_MAX);
+    robot_arm->motor[1].motor_pos = clamp(robot_arm->motor[1].motor_pos, THETA2_MIN, THETA2_MAX);
+    robot_arm->motor[2].motor_pos = clamp(robot_arm->motor[2].motor_pos, THETA3_MIN, THETA3_MAX);
 }
 
 // 3D逆解：完整求解

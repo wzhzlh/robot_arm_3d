@@ -1,8 +1,6 @@
-﻿﻿﻿#include "start_task.h"
-#include "main.h"
-#include "drive.h"
-#include "commuction.h"
-#include "k230.h"
+﻿﻿#include "FreeRTOS.h"
+#include "start_task.h"
+
 
 /* ---------------------------------------------------------------
  * start_task : 基本要求(1)
@@ -20,16 +18,16 @@ static ServoBus_t arm;
 static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 {
     arm.motor[0].id = 1;
-    arm.motor[0].motor[0].motor_pos = (double)angle_to_pwm(th1);
-    arm.motor[0].target_time  = move_time;
+    arm.motor[0].motor_pos = (double)angle_to_pwm(th1);
+    arm.target_time  = move_time;
 
     arm.motor[1].id = 2;
-    arm.motor[1].motor[1].motor_pos = (double)angle_to_pwm(th2);
-    arm.motor[1].target_time  = move_time;
+    arm.motor[1].motor_pos = (double)angle_to_pwm(th2);
+    arm.target_time  = move_time;
 
     arm.motor[2].id = 3;
-    arm.motor[2].motor[2].motor_pos = (double)angle_to_pwm(th3);
-    arm.motor[2].target_time  = move_time;
+    arm.motor[2].motor_pos = (double)angle_to_pwm(th3);
+    arm.target_time  = move_time;
 
     ServoBus_Move_Many(arm, 3, move_time);
 }
@@ -223,9 +221,9 @@ void requirement_3(void *argument)
             /* 在目标位置停留一段时间 */
             osDelay(1000);
             
-            /* 返回原点 */
-            move_to(0.15f, 0.0f, 0.15f, 2000);
-            osDelay(2500);
+            // /* 返回原点 */
+            //  move_to(0.15f, 0.0f, 0.15f, 2000);
+            // osDelay(2500);
             
             /* 状态重置 */
             arm_state = ARM_IDLE;
@@ -244,15 +242,44 @@ void requirement_4(void *argument)
     /* 启动舵机串口接收 */
     ServoBus_Start_Receive();
     
+    float error_threshold = 2.0f;  // 角度误差阈值
+    
     for(;;)
     {
+        K230_UART_Init();
         /* 处理舵机反馈数据 */
         if(g_servo_reply_ok)
         {
             /* 解析舵机返回的角度数据 */
             float angle = (g_servo_pwm - 500) / 7.407f;
             
-            /* 可以在这里添加舵机位置反馈处理逻辑 */
+            /* 根据舵机ID存储实际角度并进行闭环控制 */
+            if(g_servo_id >= 1 && g_servo_id <= 3)
+            {
+                /* 计算当前角度误差 */
+                float expected_angle = 0.0f;
+                if(g_servo_id == 1) expected_angle = arm.motor[0].motor_pos;
+                else if(g_servo_id == 2) expected_angle = arm.motor[1].motor_pos;
+                else if(g_servo_id == 3) expected_angle = arm.motor[2].motor_pos;
+                
+                float error = expected_angle - angle;
+                
+                /* 如果当前实际角度与期望角度差异过大，进行补偿 */
+                if(fabsf(error) > error_threshold)
+                {
+                    /* 这里可以实现简单的比例补偿算法 */
+                    float new_target_angle = angle + error * 0.8f;  // 80%的误差补偿
+                    
+                    /* 根据ID设置新的目标角度 */
+                    float th1 = arm.motor[0].motor_pos, th2 = arm.motor[1].motor_pos, th3 = arm.motor[2].motor_pos;
+                    if(g_servo_id == 1) th1 = new_target_angle;
+                    else if(g_servo_id == 2) th2 = new_target_angle;
+                    else if(g_servo_id == 3) th3 = new_target_angle;
+                    
+                    /* 发送修正后的角度命令 */
+                    set_angles(th1, th2, th3, 500);
+                }
+            }
             
             g_servo_reply_ok = 0;  // 清除标志
         }

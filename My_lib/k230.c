@@ -72,6 +72,10 @@ void K230_ParseFrame(uint8_t *buf, uint16_t len)
     {
         // 数据部分：buf[2] ~ buf[2+data_len-1]
         memcpy(&k230_target_pos, &buf[2], data_len);
+        k230_target_pos.x += 10.0f;  // X 偏移
+        k230_target_pos.y += 0.0f;   // Y 偏移
+        k230_target_pos.z += 5.0f;   // Z 偏移
+        //相对于摄像头坐标改为相对于机械臂基座坐标
         k230_comm_status = K230_RECEIVED_OK;
     }
     else
