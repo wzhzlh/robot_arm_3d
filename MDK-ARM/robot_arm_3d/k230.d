@@ -41,4 +41,5 @@ robot_arm_3d\k230.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\math.h
 robot_arm_3d\k230.o: ../Core/Inc/main.h
 robot_arm_3d\k230.o: ..\My_lib\commuction.h
 robot_arm_3d\k230.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+robot_arm_3d\k230.o: ../Core/Inc/main.h
 robot_arm_3d\k230.o: ../Core/Inc/usart.h

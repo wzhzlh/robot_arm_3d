@@ -32,3 +32,7 @@ robot_arm_3d\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 robot_arm_3d\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 robot_arm_3d\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 robot_arm_3d\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+robot_arm_3d\gpio.o: ..\My_lib\commuction.h
+robot_arm_3d\gpio.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\string.h
+robot_arm_3d\gpio.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+robot_arm_3d\gpio.o: ../Core/Inc/main.h

@@ -37,3 +37,4 @@ robot_arm_3d\drive_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 robot_arm_3d\drive_1.o: ..\My_lib\commuction.h
 robot_arm_3d\drive_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\string.h
 robot_arm_3d\drive_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+robot_arm_3d\drive_1.o: ../Core/Inc/main.h

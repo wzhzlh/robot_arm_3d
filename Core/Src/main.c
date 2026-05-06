@@ -161,9 +161,9 @@ void SystemClock_Config(void)
 void Arm_Home(ServoBus_t *arm)
 {
     // 设定零位目标
-    arm->motor_pos[1] = HOME_JOINT1;
-    arm->motor_pos[2] = HOME_JOINT2;
-    arm->motor_pos[3] = HOME_JOINT3;
+   // arm->motor[0].motor_pos = HOME_JOINT1;
+   //arm->motor[1].motor_pos = HOME_JOINT2;
+   // arm->motor[2].motor_pos = HOME_JOINT3;
 
     // 慢速回零，2秒更稳
     ServoBus_Move_Many(arm, 3, 2000);

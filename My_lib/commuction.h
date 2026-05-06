@@ -16,6 +16,11 @@
 #define SERVO_TIME_MIN       0         // 最小运行时间
 #define SERVO_TIME_MAX       9999      // 最大运行时间
 
+
+// ==================== 新增：解析后存储的舵机数据 ====================
+uint8_t  g_servo_id = 0;         // 反馈的舵机ID
+uint16_t g_servo_pwm = 0;        // 反馈的PWM值
+uint8_t  g_servo_reply_ok = 0;   // 指令执行成功标志
 _Pragma("pack(1)") // 字节对齐，确保结构体紧凑存储
 // ==================== 坐标结构体 ====================
 typedef struct{
@@ -53,6 +58,7 @@ HAL_StatusTypeDef ServoBus_ReadAngle(uint8_t id);
 HAL_StatusTypeDef ServoBus_SetID(uint8_t old_id, uint8_t new_id);
 HAL_StatusTypeDef ServoBus_Unlock(uint8_t id);
 HAL_StatusTypeDef ServoBus_Lock(uint8_t id);
+void ServoBus_ParseReply();
 void ServoBus_Start_Receive(void);
 
 #endif

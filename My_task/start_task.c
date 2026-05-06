@@ -1,4 +1,4 @@
-﻿﻿#include "FreeRTOS.h"
+﻿#include "FreeRTOS.h"
 #include "start_task.h"
 
 
@@ -29,7 +29,7 @@ static void set_angles(float th1, float th2, float th3, uint16_t move_time)
     arm.motor[2].motor_pos = (double)angle_to_pwm(th3);
     arm.target_time  = move_time;
 
-    ServoBus_Move_Many(arm, 3, move_time);
+    ServoBus_Move_Many(&arm, 3, move_time);
 }
 
 /* 通过逆运动学将末端移动到指定空间坐标 (x,y,z 单位:米) */

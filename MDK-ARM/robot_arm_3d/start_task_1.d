@@ -1,6 +1,4 @@
 robot_arm_3d\start_task_1.o: ..\My_task\start_task.c
-robot_arm_3d\start_task_1.o: ..\My_task\start_task.h
-robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 robot_arm_3d\start_task_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 robot_arm_3d\start_task_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdint.h
@@ -10,6 +8,8 @@ robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/
 robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
 robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+robot_arm_3d\start_task_1.o: ..\My_task\start_task.h
+robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
 robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
 robot_arm_3d\start_task_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
@@ -46,3 +46,14 @@ robot_arm_3d\start_task_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_p
 robot_arm_3d\start_task_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 robot_arm_3d\start_task_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 robot_arm_3d\start_task_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+robot_arm_3d\start_task_1.o: ..\My_lib\commuction.h
+robot_arm_3d\start_task_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\string.h
+robot_arm_3d\start_task_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+robot_arm_3d\start_task_1.o: ../Core/Inc/main.h
+robot_arm_3d\start_task_1.o: ..\My_lib\drive.h
+robot_arm_3d\start_task_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
+robot_arm_3d\start_task_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\math.h
+robot_arm_3d\start_task_1.o: ..\My_lib\k230.h
+robot_arm_3d\start_task_1.o: ..\My_lib\crc_ccitt.h
+robot_arm_3d\start_task_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+robot_arm_3d\start_task_1.o: ..\My_lib\crc_ccitt.h

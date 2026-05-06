@@ -3,11 +3,11 @@
 #include "start_task.h"
 #include "math.h"
 
-TaskHandle_t start_task_Handle;
-TaskHandle_t main_task_Handle;
-TaskHandle_t arm_control_task_Handle;
-TaskHandle_t comm_task_Handle;  
-TaskHandle_t sensor_task_Handle;
+TaskHandle_t requirement_1_Handle;
+TaskHandle_t requirement_2_Handle;
+TaskHandle_t requirement_3_Handle;
+TaskHandle_t requirement_4_Handle;  
+TaskHandle_t requirement_5_Handle;
 void task_init()
 {
 	vPortEnterCritical();

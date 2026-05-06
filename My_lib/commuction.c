@@ -9,10 +9,7 @@ uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存
 uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存
 uint16_t servo_rx_len = 0;               // 接收数据长度
 
-// ==================== 新增：解析后存储的舵机数据 ====================
-uint8_t  g_servo_id = 0;         // 反馈的舵机ID
-uint16_t g_servo_pwm = 0;        // 反馈的PWM值
-uint8_t  g_servo_reply_ok = 0;   // 指令执行成功标志
+
 
 /**
  * @brief  底层：DMA方式发送舵机指令
@@ -80,7 +77,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
  *          2. 读角度返回 -> #001P1500!
  *          3. 其他指令 -> 对应格式帧
  */
-void ServoBus_ParseReply(void)
+void ServoBus_ParseReply()
 {
     // 无数据直接返回
     if(servo_rx_len == 0) return;

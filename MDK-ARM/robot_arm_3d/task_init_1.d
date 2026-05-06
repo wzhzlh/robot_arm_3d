@@ -47,3 +47,14 @@ robot_arm_3d\task_init_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pw
 robot_arm_3d\task_init_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 robot_arm_3d\task_init_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 robot_arm_3d\task_init_1.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+robot_arm_3d\task_init_1.o: ..\My_lib\commuction.h
+robot_arm_3d\task_init_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\string.h
+robot_arm_3d\task_init_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+robot_arm_3d\task_init_1.o: ../Core/Inc/main.h
+robot_arm_3d\task_init_1.o: ..\My_lib\drive.h
+robot_arm_3d\task_init_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
+robot_arm_3d\task_init_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\math.h
+robot_arm_3d\task_init_1.o: ..\My_lib\k230.h
+robot_arm_3d\task_init_1.o: ..\My_lib\crc_ccitt.h
+robot_arm_3d\task_init_1.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+robot_arm_3d\task_init_1.o: ..\My_lib\crc_ccitt.h

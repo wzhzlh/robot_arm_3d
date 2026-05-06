@@ -40,6 +40,10 @@ robot_arm_3d\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_e
 robot_arm_3d\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 robot_arm_3d\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 robot_arm_3d\freertos.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+robot_arm_3d\freertos.o: ..\My_lib\commuction.h
+robot_arm_3d\freertos.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\string.h
+robot_arm_3d\freertos.o: D:\HRAppStoreDownload\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+robot_arm_3d\freertos.o: ../Core/Inc/main.h
 robot_arm_3d\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 robot_arm_3d\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
 robot_arm_3d\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
