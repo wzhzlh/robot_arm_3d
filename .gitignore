@@ -1,0 +1,46 @@
+# ========== Keil MDK-ARM 编译产物 ==========
+# 编译输出的目标文件/列表文件/依赖文件
+*.crf
+*.d
+*.o
+*.lst
+*.dep
+*.lnp
+
+# 可执行文件和固件
+*.axf
+*.hex
+*.bin
+*.sct
+
+# 编译报告/日志
+*.htm
+*.build_log.htm
+
+# JLink 调试日志
+JLinkLog.txt
+JLinkSettings.ini
+
+# 调试配置（IDE生成，非源码）
+DebugConfig/
+EventRecorderStub.scvd
+
+# MDK-ARM 用户设置（每人不同，不应提交）
+*.uvguix.*
+
+# IDE 本地配置
+.eide/
+.cmsis/
+
+# ========== 项目级临时/缓存目录 ==========
+tmp/
+.marscode/
+.vscode/
+.idea/
+
+# ========== 系统文件 ==========
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
