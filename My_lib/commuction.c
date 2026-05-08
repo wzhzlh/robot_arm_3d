@@ -54,25 +54,7 @@ void ServoBus_Start_Receive(void)
 }
 
 
-/**
- * @brief  串口空闲中断处理函数（接收舵机回传数据）
- * @note   需在 stm32f4xx_it.c 中调用，或直接重写中断函数
- */
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
-{
-    // 只处理舵机串口(USART2)
-    if(huart == &huart2)
-    {
-        // 1. 保存接收长度（官方直接给出，无需手动计算）
-        servo_rx_len = size;
-        // 2. 拷贝数据到解析缓冲区
-        memcpy(servo_rx_data, servo_rx_buf, servo_rx_len);
-        // 3. 解析舵机反馈帧
-        ServoBus_ParseReply();
-        // 4. 重新启动DMA+空闲中断接收（等待下一帧）
-        ServoBus_Start_Receive();
-    }
-}
+
 /**
  * @brief  解析众灵舵机反馈帧（严格遵循手册 #...! 格式）
  * @note   手册反馈格式：

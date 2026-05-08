@@ -22,7 +22,7 @@ void task_init()
          "requirement_2",
           256,
           NULL,
-          5,
+          4,
           &requirement_2_Handle);
 	xTaskCreate(requirement_3,
         "requirement_3",
@@ -33,9 +33,9 @@ void task_init()
 
 	xTaskCreate(requirement_4,
         "requirement_4",
-         512,
+         256,
          NULL,
-         2,
+         4,
          &requirement_4_Handle);
 				 
 	xTaskCreate(requirement_5,

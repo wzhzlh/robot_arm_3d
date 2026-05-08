@@ -300,3 +300,35 @@ void requirement_5(void *argument)
         osDelay(20);
     }
 }
+
+
+
+/**
+ * @brief  串口空闲中断处理函数（接收舵机回传数据）
+ */
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
+{
+    // 只处理舵机串口(USART2)
+    if(huart == &huart2)
+    {
+        // 1. 保存接收长度（官方直接给出，无需手动计算）
+        servo_rx_len = size;
+        // 2. 拷贝数据到解析缓冲区
+        memcpy(servo_rx_data, servo_rx_buf, servo_rx_len);
+        // 3. 解析舵机反馈帧
+        ServoBus_ParseReply();
+        // 4. 重新启动DMA+空闲中断接收（等待下一帧）
+        ServoBus_Start_Receive();
+    }
+       // 只处理K230对应的UART3
+   if(huart == &huart3)
+   {
+       k230_rx_len = size;
+       // 拷贝数据到解析缓冲区
+       memcpy(k230_parse_buf, k230_rx_buf, k230_rx_len);
+       // 解析帧数据
+       K230_ParseFrame(k230_parse_buf, k230_rx_len);
+       // 重启DMA接收，等待下一帧数据
+       K230_UART_Init();
+   }
+}
