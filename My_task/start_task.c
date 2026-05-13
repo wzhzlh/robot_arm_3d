@@ -13,19 +13,24 @@
 
 /* 舵机数组：3个关节，ID分别为1/2/3 */
 static ServoBus_t arm;
-
+arm.motor[0].offset = 500.0f;
+arm.motor[1].offset = 500.0f;
+arm.motor[2].offset = 1500.0f;
+arm.motor[0].id = 0;
+arm.motor[1].id = 1;
+arm.motor[2].id = 2;
 /* 将三个关节角度(度)写入舵机结构体并发送 */
 static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 {
-    arm.motor[0].id = 1;
+    arm.motor[0].id = 0;
     arm.motor[0].motor_pos = (double)angle_to_pwm(th1);
     arm.target_time  = move_time;
 
-    arm.motor[1].id = 2;
+    arm.motor[1].id = 1;
     arm.motor[1].motor_pos = (double)angle_to_pwm(th2);
     arm.target_time  = move_time;
 
-    arm.motor[2].id = 3;
+    arm.motor[2].id = 2;
     arm.motor[2].motor_pos = (double)angle_to_pwm(th3);
     arm.target_time  = move_time;
 
