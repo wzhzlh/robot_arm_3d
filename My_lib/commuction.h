@@ -52,6 +52,7 @@ typedef struct
     uint16_t target_time;  // 运行时间(ms)
     motor_t motor[3];    // 3个关节的舵机信息
 } ServoBus_t;
+
 _Pragma("pack()") // 恢复默认对齐
 
 // ==================== 函数声明 ====================

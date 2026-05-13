@@ -6,6 +6,7 @@
 *.lst
 *.dep
 *.lnp
+*.map
 
 # 可执行文件和固件
 *.axf
