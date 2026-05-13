@@ -4,7 +4,7 @@
 static uint8_t servo_tx_busy = 0;
 
 // ==================== 舵机接收缓冲区 ====================
-#define SERVO_RX_BUF_LEN 32
+
 uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存
 uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存
 uint16_t servo_rx_len = 0;               // 接收数据长度
@@ -14,7 +14,7 @@ uint8_t  g_servo_id = 0;         // 反馈的舵机ID
 uint16_t g_servo_pwm = 0;        // 反馈的PWM值
 uint8_t  g_servo_reply_ok = 0;   // 指令执行成功标志
 
-/**
+/** 
  * @brief  底层：DMA方式发送舵机指令
  */
 HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd)

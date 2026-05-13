@@ -21,7 +21,10 @@
 extern uint8_t  g_servo_id ;         // 反馈的舵机ID
 extern uint16_t g_servo_pwm;        // 反馈的PWM值
 extern uint8_t  g_servo_reply_ok;   // 指令执行成功标志
-
+#define SERVO_RX_BUF_LEN 32
+extern uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存
+extern uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存
+extern uint16_t servo_rx_len ;   
 _Pragma("pack(1)") // 字节对齐，确保结构体紧凑存储
 // ==================== 坐标结构体 ====================
 typedef struct{

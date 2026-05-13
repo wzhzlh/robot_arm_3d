@@ -6,7 +6,7 @@
 #include <string.h>
 #include "crc_ccitt.h"  // 你已有的CRC校验库
 #include "drive.h"      // 包含你定义的target_t结构体
-
+#include "commuction.h"
 // ==================== 帧格式定义（和K230约定好） ====================
 #define K230_FRAME_HEAD     0xAA    // 帧头
 #define K230_FRAME_TAIL     0x55    // 帧尾
