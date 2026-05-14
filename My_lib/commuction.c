@@ -1,13 +1,14 @@
 #include "commuction.h"
 #include "usart.h"
 
-static uint8_t servo_tx_busy = 0;
-
+uint8_t servo_tx_busy = 0;
+char a[52];
+char b[32];
 // ==================== 舵机接收缓冲区 ====================
 
-uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存
-uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存
-uint16_t servo_rx_len = 0;               // 接收数据长度
+uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存（k230.c通过extern访问）
+uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存（k230.c通过extern访问）
+uint16_t servo_rx_len = 0;               // 接收数据长度（k230.c通过extern访问）
 
 // ==================== 新增：解析后存储的舵机数据 ====================
 uint8_t  g_servo_id = 0;         // 反馈的舵机ID
@@ -26,13 +27,19 @@ HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd)
         return HAL_BUSY;
 
     servo_tx_busy = 1;
-    HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, (uint8_t*)cmd, strlen(cmd));
 
-    if(status != HAL_OK)
+    // 一个一个字节发，阻塞发送
+    while (*cmd != '\0')
     {
-        servo_tx_busy = 0;
+        HAL_UART_Transmit(&huart2, (uint8_t*)cmd, 1, HAL_MAX_DELAY);
+        cmd++;
     }
-    return status;
+
+    strcpy(b, cmd-1);
+
+    servo_tx_busy = 0;
+
+    return HAL_OK;
 }
 /**
  * @brief  DMA发送完成回调
@@ -45,12 +52,19 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
     }
 }
 /**
- * @brief  启动DMA+空闲中断接收
+ * @brief  启动DMA+空闲中断接收（与K230一致的写法）
  */
 void ServoBus_Start_Receive(void)
 {
-    __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
-    HAL_UART_Receive_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
+    // 先停止当前接收（防止状态冲突）
+    HAL_UART_AbortReceive(&huart2);
+    
+    // 官方API：开启DMA接收，空闲中断触发HAL_UARTEx_RxEventCallback
+    HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
+    (void)status;
+    
+    // 关闭半满中断，避免干扰空闲中断
+    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
 }
 
 
@@ -121,45 +135,43 @@ HAL_StatusTypeDef ServoBus_Move_One(ServoBus_t *servo)
     }
 
     char cmd[32] = {0};
+		
     sprintf(cmd, "#%03uP%04uT%04u!", servo->motor[0].id, pos, servo->target_time);
-
+   
     return ServoBus_SendCmd(cmd);
 }
 
 /**
  * @brief  控制多个舵机同步运动
+ * @note   协议格式: {G0000#000P1602T1000!#001P2500T0000!} - 每个舵机带自己的时间参数
  */
-HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count, uint16_t time)
+HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count)
 {
     if(servos == NULL || count == 0 || count > 16)
         return HAL_ERROR;
 
-    time = (time < SERVO_TIME_MIN) ? SERVO_TIME_MIN : time;
-    time = (time > SERVO_TIME_MAX) ? SERVO_TIME_MAX : time;
-
-    char cmd[128] = "#";
+    char cmd[256] = "{G0000";  // 组指令头
     char temp[32] = {0};
 
     for(uint8_t i = 0; i < count; i++)
     {
         uint16_t pos = (uint16_t)(servos->motor[i].motor_pos);
-        if (pos < SERVO_POS_MIN)
-        {
-            pos = SERVO_POS_MIN;
-        }
-        if (pos > SERVO_POS_MAX)
-        {
-            pos = SERVO_POS_MAX;
-        }
+        if (pos < SERVO_POS_MIN) pos = SERVO_POS_MIN;
+        if (pos > SERVO_POS_MAX) pos = SERVO_POS_MAX;
 
-        sprintf(temp, "%03uP%04u", servos->motor[i].id, pos);
+        uint16_t time = servos->target_time;
+        if (time < SERVO_TIME_MIN) time = SERVO_TIME_MIN;
+        if (time > SERVO_TIME_MAX) time = SERVO_TIME_MAX;
+
+        // 每个舵机指令格式: #IDPxxxxTxxxx!
+        sprintf(temp, "#%03uP%04uT%04u!", servos->motor[i].id, pos, time);
         strcat(cmd, temp);
     }
 
-    sprintf(temp, "T%04u!", time);
-    strcat(cmd, temp);
-
-    return ServoBus_SendCmd(cmd);
+    strcat(cmd, "}");  // 组指令结束
+//    strcpy(a, cmd);
+		memcpy(a,cmd,strlen(cmd));
+    return ServoBus_SendCmd(a);
 }
 
 /**

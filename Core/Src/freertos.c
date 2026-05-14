@@ -122,12 +122,7 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-  ServoBus_t robot_arm; 
-    ServoBus_SendCmd("#001PMOD1!");
-    ServoBus_SendCmd("#002PMOD1!");
-    ServoBus_SendCmd("#003PMOD1!");
-    HAL_Delay(100); // 等待舵机响应
-    Arm_Home(&robot_arm);
+
   for(;;)
   {
     task_init();

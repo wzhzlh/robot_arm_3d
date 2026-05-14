@@ -15,8 +15,13 @@ K230_StatusTypeDef k230_comm_status = K230_IDLE;
  */
 void K230_UART_Init(void)
 {
+    // 先停止当前接收（防止状态冲突）
+    HAL_UART_AbortReceive(&huart3);
+    
     // 官方API：开启DMA接收，空闲中断触发HAL_UARTEx_RxEventCallback
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart3, k230_rx_buf, K230_RX_BUF_LEN);
+    HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart3, k230_rx_buf, K230_RX_BUF_LEN);
+    (void)status;
+    
     // 关闭半满中断，避免干扰空闲中断
     __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);
 }

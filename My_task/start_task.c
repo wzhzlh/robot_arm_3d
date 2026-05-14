@@ -25,20 +25,20 @@ void arm_init(void)
 /* 将三个关节角度(度)写入舵机结构体并发送 */
 static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 {
-	  arm_init();
+	 
     arm.motor[0].id = 0;
-    arm.motor[0].motor_pos = (double)angle_to_pwm(th1);
+    arm.motor[0].motor_pos = (uint16_t)angle_to_pwm(th1);
     arm.target_time  = move_time;
 
     arm.motor[1].id = 1;
-    arm.motor[1].motor_pos = (double)angle_to_pwm(th2);
+    arm.motor[1].motor_pos = (uint16_t)angle_to_pwm(th2);
     arm.target_time  = move_time;
 
     arm.motor[2].id = 2;
-    arm.motor[2].motor_pos = (double)angle_to_pwm(th3);
+    arm.motor[2].motor_pos = (uint16_t)angle_to_pwm(th3);
     arm.target_time  = move_time;
 
-    ServoBus_Move_Many(&arm, 3, move_time);
+    ServoBus_Move_Many(&arm, 3);
 }
 
 /* 通过逆运动学将末端移动到指定空间坐标 (x,y,z 单位:米) */
@@ -77,18 +77,20 @@ static void line_interp(float x0, float y0, float z0,
 void requirement_1(void *argument)
 {
     /* 等待系统稳定 */
-    osDelay(500);
-   ServoBus_ReadAngle(1);
+	   arm_init();
+     osDelay(500);
+	   ServoBus_Start_Receive();
+
     /* ---- 归零：所有关节回到 0 度 ---- */
-    set_angles(0.0f, 0.0f, 0.0f, 1000);
-    osDelay(1500);
+//    set_angles(0.0f, 0.0f, 0.0f, 1000);
+//    osDelay(1500);
 
     /* ====================================================
      * Step 1：joint1 水平旋转  0 -> 270 -> 0
      * ==================================================== */
-    set_angles(270.0f, 0.0f, 0.0f, 2000);
+    set_angles(200.0f, 0.0f, 0.0f, 2000);
     osDelay(2500);
-
+     ServoBus_ReadAngle(1);
     set_angles(0.0f, 0.0f, 0.0f, 2000);
     osDelay(2500);
 
@@ -111,7 +113,7 @@ void requirement_1(void *argument)
     osDelay(2500);
 
     /* 基本动作演示完毕，删除本任务 */
-    vTaskDelete(NULL);
+//    vTaskDelete(NULL);
 }
 
 /* ---------------------------------------------------------------
@@ -255,7 +257,6 @@ void requirement_4(void *argument)
     
     for(;;)
     {
-        K230_UART_Init();
         /* 处理舵机反馈数据 */
         if(g_servo_reply_ok)
         {

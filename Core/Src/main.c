@@ -58,7 +58,21 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void Servo_SendCmd(uint8_t id, uint16_t pos, uint16_t time)
+{
+    char cmd[32];
 
+    sprintf(cmd,
+            "#%03dP%04dT%04d!",
+            id,
+            pos,
+            time);
+
+    HAL_UART_Transmit(&huart3,
+                      (uint8_t*)cmd,
+                      strlen(cmd),
+                      100);
+}
 /* USER CODE END 0 */
 
 /**
@@ -111,6 +125,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -157,16 +172,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void Arm_Home(ServoBus_t *arm)
-{
-    // 设定零位目标
-   // arm->motor[0].motor_pos = HOME_JOINT1;
-   //arm->motor[1].motor_pos = HOME_JOINT2;
-   // arm->motor[2].motor_pos = HOME_JOINT3;
 
-    // 慢速回零，2秒更稳
-    ServoBus_Move_Many(arm, 3, 2000);
-}
 /* USER CODE END 4 */
 
 /**

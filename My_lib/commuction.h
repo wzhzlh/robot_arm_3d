@@ -58,7 +58,7 @@ _Pragma("pack()") // 恢复默认对齐
 // ==================== 函数声明 ====================
 HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd);
 HAL_StatusTypeDef ServoBus_Move_One(ServoBus_t *servo);
-HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count, uint16_t time);
+HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count);
 HAL_StatusTypeDef ServoBus_ReadAngle(uint8_t id);
 HAL_StatusTypeDef ServoBus_SetID(uint8_t old_id, uint8_t new_id);
 HAL_StatusTypeDef ServoBus_Unlock(uint8_t id);
