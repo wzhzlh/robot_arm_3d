@@ -47,6 +47,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
         # My task
         My_task/start_task.c
+        My_task/task_init.c
 
         # My lib
         My_lib/commuction.c
