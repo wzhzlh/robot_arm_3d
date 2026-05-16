@@ -22,7 +22,7 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include "commuction.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -122,16 +122,17 @@ void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
-
+ 
   for(;;)
   {
-    task_init();
+
+   task_init();
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
 }
 
-/* Private application code ------------------------------------------------__*/
+/* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */

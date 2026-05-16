@@ -90,8 +90,23 @@ target_t FK_3D(ServoBus_t *robot_arm)
 }
 
 // 角度转PWM值
-uint16_t angle_to_pwm(float angle)
+// ID0：0° → 500
+uint16_t angle_to_pwm_id0(float angle)
 {
     angle = clamp(angle, 0.0f, 270.0f);
     return (uint16_t)(angle * 7.407f + 500.0f);
+}
+
+// ID1：0° → 500
+uint16_t angle_to_pwm_id1(float angle)
+{
+    angle = clamp(angle, 0.0f, 270.0f);
+    return (uint16_t)(angle * 7.407f + 500.0f);
+}
+
+// ID2：0° → 1500（你要的特殊零点）
+uint16_t angle_to_pwm_id2(float angle)
+{
+    angle = clamp(angle, 0.0f, 270.0f);
+    return (uint16_t)(angle * 7.407f + 1500.0f);
 }

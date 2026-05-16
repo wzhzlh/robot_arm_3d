@@ -27,15 +27,15 @@ static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 {
 	 
     arm.motor[0].id = 0;
-    arm.motor[0].motor_pos = (uint16_t)angle_to_pwm(th1);
+    arm.motor[0].motor_pos = (uint16_t)angle_to_pwm_id0(th1);
     arm.target_time  = move_time;
 
     arm.motor[1].id = 1;
-    arm.motor[1].motor_pos = (uint16_t)angle_to_pwm(th2);
+    arm.motor[1].motor_pos = (uint16_t)angle_to_pwm_id1(th2);
     arm.target_time  = move_time;
 
     arm.motor[2].id = 2;
-    arm.motor[2].motor_pos = (uint16_t)angle_to_pwm(th3);
+    arm.motor[2].motor_pos = (uint16_t)angle_to_pwm_id2(th3);
     arm.target_time  = move_time;
 
     ServoBus_Move_Many(&arm, 3);
@@ -82,13 +82,13 @@ void requirement_1(void *argument)
 	   ServoBus_Start_Receive();
 
     /* ---- 归零：所有关节回到 0 度 ---- */
-//    set_angles(0.0f, 0.0f, 0.0f, 1000);
-//    osDelay(1500);
+    set_angles(0.0f, 0.0f, 0.0f, 1000);
+    osDelay(1500);
 
     /* ====================================================
      * Step 1：joint1 水平旋转  0 -> 270 -> 0
      * ==================================================== */
-    set_angles(200.0f, 0.0f, 0.0f, 2000);
+    set_angles(270.0f, 0.0f, 0.0f, 2000);
     osDelay(2500);
      ServoBus_ReadAngle(1);
     set_angles(0.0f, 0.0f, 0.0f, 2000);
@@ -106,7 +106,7 @@ void requirement_1(void *argument)
     /* ====================================================
      * Step 3：joint3 末端旋转  0 -> 180 -> 0
      * ==================================================== */
-    set_angles(0.0f, 0.0f, 180.0f, 2000);
+    set_angles(0.0f, 0.0f, -90.0f, 2000);
     osDelay(2500);
 
     set_angles(0.0f, 0.0f, 0.0f, 2000);

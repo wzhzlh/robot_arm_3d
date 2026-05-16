@@ -36,6 +36,8 @@ virtualFolder:
       folders:
         - name: STM32F4xx_HAL_Driver
           files:
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
             - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c
             - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c
             - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c
@@ -49,8 +51,6 @@ virtualFolder:
             - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c
             - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
             - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c
-            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
-            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
             - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
           folders: []
         - name: CMSIS
@@ -73,6 +73,26 @@ virtualFolder:
             - path: ../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
             - path: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
           folders: []
+    - name: My_lib
+      files:
+        - path: ../My_lib/commuction.c
+        - path: ../My_lib/commuction.h
+        - path: ../My_lib/crc_ccitt.c
+        - path: ../My_lib/crc_ccitt.h
+        - path: ../My_lib/drive.c
+        - path: ../My_lib/drive.h
+        - path: ../My_lib/k230.c
+        - path: ../My_lib/k230.h
+        - path: ../My_lib/PID_old.c
+        - path: ../My_lib/PID_old.h
+      folders: []
+    - name: My_task
+      files:
+        - path: ../My_task/task_init.h
+        - path: ../My_task/start_task.c
+        - path: ../My_task/start_task.h
+        - path: ../My_task/task_init.c
+      folders: []
     - name: ::CMSIS
       files: []
       folders: []
@@ -95,14 +115,12 @@ targets:
         - ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F
         - ../Drivers/CMSIS/Device/ST/STM32F4xx/Include
         - ../Drivers/CMSIS/Include
-        - .cmsis/include
-        - RTE/_robot_arm_3d
         - ../My_lib
         - ../My_task
+        - .cmsis/include
+        - RTE/_robot_arm_3d
       libList: []
-    excludeList:
-      - ../My_task/start_task.c
-      - ../My_task/task_init.c
+    excludeList: []
     settings: {}
     toolchain: AC5
     toolchainConfigMap:

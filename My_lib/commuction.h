@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "main.h"
-
+#include "usart.h"
 // ==================== 众灵舵机 硬件参数 ====================
 #define SERVO_TX_TIMEOUT     100       // 发送超时(ms)
 #define SERVO_BAUDRATE       115200    // 波特率
