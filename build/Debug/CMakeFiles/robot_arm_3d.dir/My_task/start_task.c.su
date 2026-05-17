@@ -1,0 +1,9 @@
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:16:6:arm_init	4	static
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:26:13:set_angles	24	static
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:45:13:move_to	96	static
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:62:13:line_interp	64	static
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:77:6:requirement_1	16	static
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:145:6:requirement_2	16	static
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:201:6:requirement_3	32	static
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:251:6:requirement_4	48	static
+/home/zhangjiayi/桌面/robot_arm_3d/My_task/start_task.c:305:6:requirement_5	16	static
