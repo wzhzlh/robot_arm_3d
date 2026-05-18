@@ -1,4 +1,4 @@
-/home/zhangjiayi/桌面/robot_arm_3d/Core/Src/usart.c:35:6:MX_USART2_UART_Init	8	static
-/home/zhangjiayi/桌面/robot_arm_3d/Core/Src/usart.c:64:6:MX_USART3_UART_Init	8	static
-/home/zhangjiayi/桌面/robot_arm_3d/Core/Src/usart.c:92:6:HAL_UART_MspInit	56	static
-/home/zhangjiayi/桌面/robot_arm_3d/Core/Src/usart.c:205:6:HAL_UART_MspDeInit	16	static
+/home/zhangjiayi/robot_arm_3d/Core/Src/usart.c:35:6:MX_USART2_UART_Init	8	static
+/home/zhangjiayi/robot_arm_3d/Core/Src/usart.c:64:6:MX_USART3_UART_Init	8	static
+/home/zhangjiayi/robot_arm_3d/Core/Src/usart.c:92:6:HAL_UART_MspInit	56	static
+/home/zhangjiayi/robot_arm_3d/Core/Src/usart.c:205:6:HAL_UART_MspDeInit	16	static

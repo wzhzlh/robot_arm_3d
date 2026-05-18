@@ -1,0 +1,44 @@
+// Ozone Debug Configuration for STM32F407VG
+// Compatible with Ozone v3.04i (JLink直接连接，无需OpenOCD)
+// Usage: ozone -j debug/robot_arm_3d.jdebug
+//
+// 如需切换 Debug/Release 版本，修改下方 ExecutableFile.Path
+
+Device = "STM32F407VG";
+
+TargetInterface.Type = SWD;
+TargetInterface.speed = 4000;  // kHz (STM32F4 支持最高 4MHz SWD)
+
+TargetDevice.MemoryMap = "STM32F407VG.xml";
+
+Target.ResetStrategy = "Software, 0x8000000, 10000";
+
+ProjectFile.Path = "/home/zhangjiayi/robot_arm_3d";
+
+// === 切换构建版本 ===
+// ExecutableFile.Path = "/home/zhangjiayi/robot_arm_3d/build/Debug/robot_arm_3d.elf"
+// ExecutableFile.Path = "/home/zhangjiayi/robot_arm_3d/build/Release/robot_arm_3d.elf"
+ExecutableFile.Path = "/home/zhangjiayi/robot_arm_3d/build/Debug/robot_arm_3d.elf";
+
+// Ozone 直接连接 JLink，不需要 OpenOCD 中的 GDB 端口
+// (Ozone 内置 J-Link 驱动)
+// TargetInterface.Port = 3333;
+
+OnProjectLoad()
+{
+    // 初始化寄存器视图
+    Registers.ViewPath = "Registers";
+
+    // 添加源代码搜索路径
+    Project.AddPathSubstitute("/home/zhangjiayi/robot_arm_3d", "/home/zhangjiayi/robot_arm_3d");
+}
+
+OnTerminate()
+{
+    Target.Reset(0);
+}
+
+OnHalt()
+{
+    // 可自定义断点逻辑
+}

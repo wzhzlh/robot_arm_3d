@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "STM32F407",
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "includePath": [
+                "${workspaceFolder}/Core/**",
+                "${workspaceFolder}/Drivers/**",
+                "${workspaceFolder}/Middlewares/**",
+                "${workspaceFolder}/My_lib/**",
+                "${workspaceFolder}/My_task/**",
+                "${workspaceFolder}/MDK-ARM/**",
+                "${workspaceFolder}/cmake/stm32cubemx/**"
+            ],
+            "defines": [
+                "USE_HAL_DRIVER",
+                "STM32F407xx"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

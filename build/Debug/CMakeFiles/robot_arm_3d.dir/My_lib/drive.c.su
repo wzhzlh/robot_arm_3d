@@ -1,7 +1,7 @@
-/home/zhangjiayi/桌面/robot_arm_3d/My_lib/drive.c:8:7:clamp	24	static
-/home/zhangjiayi/桌面/robot_arm_3d/My_lib/drive.c:16:6:IK_2D	80	static
-/home/zhangjiayi/桌面/robot_arm_3d/My_lib/drive.c:52:6:IK_3D	32	static
-/home/zhangjiayi/桌面/robot_arm_3d/My_lib/drive.c:74:10:FK_3D	128	static
-/home/zhangjiayi/桌面/robot_arm_3d/My_lib/drive.c:94:10:angle_to_pwm_id0	16	static
-/home/zhangjiayi/桌面/robot_arm_3d/My_lib/drive.c:101:10:angle_to_pwm_id1	16	static
-/home/zhangjiayi/桌面/robot_arm_3d/My_lib/drive.c:108:10:angle_to_pwm_id2	16	static
+/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:8:7:clamp	24	static
+/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:16:6:IK_2D	80	static
+/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:52:6:IK_3D	32	static
+/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:74:10:FK_3D	128	static
+/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:94:10:angle_to_pwm_id0	16	static
+/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:101:10:angle_to_pwm_id1	16	static
+/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:108:10:angle_to_pwm_id2	16	static

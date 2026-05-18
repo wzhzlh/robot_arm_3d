@@ -22,9 +22,9 @@ set(CMAKE_CXX_SIMULATE_VERSION "")
 
 
 
-set(CMAKE_AR "/usr/bin/ar")
+set(CMAKE_AR "/usr/bin/arm-none-eabi-ar")
 set(CMAKE_CXX_COMPILER_AR "/usr/bin/arm-none-eabi-gcc-ar")
-set(CMAKE_RANLIB "/usr/bin/ranlib")
+set(CMAKE_RANLIB "/usr/bin/arm-none-eabi-ranlib")
 set(CMAKE_CXX_COMPILER_RANLIB "/usr/bin/arm-none-eabi-gcc-ranlib")
 set(CMAKE_LINKER "/usr/bin/arm-none-eabi-g++")
 set(CMAKE_MT "")

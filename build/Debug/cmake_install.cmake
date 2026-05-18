@@ -1,4 +1,4 @@
-# Install script for directory: /home/zhangjiayi/桌面/robot_arm_3d
+# Install script for directory: /home/zhangjiayi/robot_arm_3d
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,12 +34,12 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+  set(CMAKE_OBJDUMP "/usr/bin/arm-none-eabi-objdump")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/zhangjiayi/桌面/robot_arm_3d/build/Debug/cmake/stm32cubemx/cmake_install.cmake")
+  include("/home/zhangjiayi/robot_arm_3d/build/Debug/cmake/stm32cubemx/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/zhangjiayi/桌面/robot_arm_3d/build/Debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/zhangjiayi/robot_arm_3d/build/Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

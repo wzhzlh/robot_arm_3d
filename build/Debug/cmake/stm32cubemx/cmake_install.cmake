@@ -1,4 +1,4 @@
-# Install script for directory: /home/zhangjiayi/桌面/robot_arm_3d/cmake/stm32cubemx
+# Install script for directory: /home/zhangjiayi/robot_arm_3d/cmake/stm32cubemx
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,6 +34,6 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+  set(CMAKE_OBJDUMP "/usr/bin/arm-none-eabi-objdump")
 endif()
 

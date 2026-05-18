@@ -3,7 +3,7 @@ set(CMAKE_HOST_SYSTEM_NAME "Linux")
 set(CMAKE_HOST_SYSTEM_VERSION "6.8.0-110-generic")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
 
-include("/home/zhangjiayi/桌面/robot_arm_3d/cmake/gcc-arm-none-eabi.cmake")
+include("/home/zhangjiayi/robot_arm_3d/cmake/gcc-arm-none-eabi.cmake")
 
 set(CMAKE_SYSTEM "Generic")
 set(CMAKE_SYSTEM_NAME "Generic")

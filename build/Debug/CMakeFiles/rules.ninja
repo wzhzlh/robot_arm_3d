@@ -72,7 +72,7 @@ rule C_COMPILER__FreeRTOS_Debug
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /usr/bin/cmake --regenerate-during-build -S/home/zhangjiayi/桌面/robot_arm_3d -B/home/zhangjiayi/桌面/robot_arm_3d/build/Debug
+  command = /usr/bin/cmake --regenerate-during-build -S/home/zhangjiayi/robot_arm_3d -B/home/zhangjiayi/robot_arm_3d/build/Debug
   description = Re-running CMake...
   generator = 1
 
