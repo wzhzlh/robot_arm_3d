@@ -1,5 +1,5 @@
 #include "commuction.h"
-
+#include "start_task.h"
 #include <string.h>
 
 uint8_t servo_tx_busy = 0;
@@ -27,7 +27,7 @@ HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd)
     memcpy(c,cmd,strlen(cmd));
     servo_tx_busy = 1;
     HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, (uint8_t*)cmd, strlen(cmd));
-
+     memcpy(b, cmd, strlen(cmd));
     if(status != HAL_OK)
     {
         servo_tx_busy = 0;
@@ -75,11 +75,12 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 void ServoBus_Start_Receive(void)
 {
     HAL_UART_AbortReceive(&huart2);
-    HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
-    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
-	  ServoBus_ReadAngle(0);
+	  HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
+		ServoBus_ReadAngle(0);
 		ServoBus_ReadAngle(1);
 		ServoBus_ReadAngle(2);
+    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+
 }
 
 /**
@@ -88,7 +89,6 @@ void ServoBus_Start_Receive(void)
 void ServoBus_ParseReply(void)
 {
     if(servo_rx_len == 0) return;
-
     // 帧格式校验
     if(servo_rx_data[0] != '#' || servo_rx_data[servo_rx_len-1] != '!')
     {
@@ -96,19 +96,14 @@ void ServoBus_ParseReply(void)
         servo_rx_len = 0;
         return;
     }
-
-    // 解析 #OK!
-    if(strstr((char *)servo_rx_data, "OK") != NULL)
+    if(strstr((char *)servo_rx_data, "P") != NULL)
     {
-        g_servo_reply_ok = 1;
+      sscanf((char *)servo_rx_data, "#%03uP%04u!",(int*) &g_servo_id, (int*)&g_servo_pwm);
+      g_servo_reply_ok = 1;
+			if(g_servo_reply_ok){
+		  arm.motor[g_servo_id].motor_rx_pos=g_servo_pwm;
+			}
     }
-    // 解析角度 #XXXPXXXX!
-    else if(strstr((char *)servo_rx_data, "P") != NULL)
-    {
-        sscanf((char *)servo_rx_data, "#%03uP%04u!", &g_servo_id, &g_servo_pwm);
-        g_servo_reply_ok = 1;
-    }
-
     // 清空缓存
     memset(servo_rx_data, 0, SERVO_RX_BUF_LEN);
     servo_rx_len = 0;
@@ -142,7 +137,7 @@ HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count)
 
     for(uint8_t i = 0; i < count; i++)
     {
-        uint16_t pos = (uint16_t)(servos->motor[i].motor_pos);
+        uint16_t pos = (uint16_t)(servos->motor[i].motor_tx_pos);
         if (pos < SERVO_POS_MIN) pos = SERVO_POS_MIN;
         if (pos > SERVO_POS_MAX) pos = SERVO_POS_MAX;
 
@@ -153,7 +148,6 @@ HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count)
         sprintf(temp, "#%03uP%04uT%04u!", servos->motor[i].id, pos, time);
         strcat(cmd, temp);
     }
-
     strcat(cmd, "}");
     memcpy(a, cmd, strlen(cmd));
     return ServoBus_SendCmd(cmd);

@@ -41,7 +41,8 @@ typedef struct{
 
 typedef struct {
   uint8_t id;
-  uint16_t motor_pos; // 关节角度值
+  uint16_t motor_tx_pos; // 关节角度值
+	uint16_t motor_rx_pos; 
   float   offset;    // 偏置校准
 }motor_t;
 // ==================== 机械臂/舵机总线结构体 ====================

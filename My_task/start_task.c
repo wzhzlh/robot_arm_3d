@@ -1,6 +1,6 @@
 #include "FreeRTOS.h"
 #include "start_task.h"
-#include "commuction.h"
+#include "task.h"
 
 /* ---------------------------------------------------------------
  * start_task : 基本要求(1)
@@ -27,15 +27,15 @@ static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 {
 	 
     arm.motor[0].id = 0;
-    arm.motor[0].motor_pos = (uint16_t)angle_to_pwm_id0(th1);
+    arm.motor[0].motor_tx_pos = (uint16_t)angle_to_pwm_id0(th1);
     arm.target_time  = move_time;
 
     arm.motor[1].id = 1;
-    arm.motor[1].motor_pos = (uint16_t)angle_to_pwm_id1(th2);
+    arm.motor[1].motor_tx_pos = (uint16_t)angle_to_pwm_id1(th2);
     arm.target_time  = move_time;
 
     arm.motor[2].id = 2;
-    arm.motor[2].motor_pos = (uint16_t)angle_to_pwm_id2(th3);
+    arm.motor[2].motor_tx_pos = (uint16_t)angle_to_pwm_id2(th3);
     arm.target_time  = move_time;
 
     ServoBus_Move_Many(&arm, 3);
@@ -52,7 +52,7 @@ static void move_to(float x, float y, float z, uint16_t move_time)
 
     IK_3D(&tmp);   /* 结果写入全局 motor1/motor2/motor3 */
 
-    set_angles(tmp.motor[0].motor_pos, tmp.motor[1].motor_pos, tmp.motor[2].motor_pos, move_time);
+    set_angles(tmp.motor[0].motor_tx_pos, tmp.motor[1].motor_tx_pos, tmp.motor[2].motor_tx_pos, move_time);
 }
 
 /* ---------------------------------------------------------------
@@ -78,40 +78,42 @@ void requirement_1(void *argument)
 {
     /* 等待系统稳定 */
 	   arm_init();
-     osDelay(500);
-	   ServoBus_Start_Receive();
+     vTaskDelay(500);
 
-    /* ---- 归零：所有关节回到 0 度 ---- */
+TickType_t xLastWakeTime = xTaskGetTickCount();
+//    /* ---- 归零：所有关节回到 0 度 ---- */
     set_angles(0.0f, 0.0f, 0.0f, 1000);
-    osDelay(1500);
+    vTaskDelay(1000);
 
     /* ====================================================
      * Step 1：joint1 水平旋转  0 -> 270 -> 0
      * ==================================================== */
     set_angles(270.0f, 0.0f, 0.0f, 2000);
-    osDelay(2500);
+    vTaskDelay(1500);
      ServoBus_ReadAngle(1);
     set_angles(0.0f, 0.0f, 0.0f, 2000);
-    osDelay(2500);
+    vTaskDelay(1500);
 
     /* ====================================================
      * Step 2：joint2 竖直旋转  0 -> 180 -> 0
      * ==================================================== */
     set_angles(0.0f, 180.0f, 0.0f, 2000);
-    osDelay(2500);
+    vTaskDelay(2500);
 
     set_angles(0.0f, 0.0f, 0.0f, 2000);
-    osDelay(2500);
+    vTaskDelay(2500);
 
     /* ====================================================
      * Step 3：joint3 末端旋转  0 -> 180 -> 0
      * ==================================================== */
     set_angles(0.0f, 0.0f, -90.0f, 2000);
-    osDelay(2500);
-
+    vTaskDelay(1500);
+    set_angles(0.0f, 0.0f, 90.0f, 2000);
+    vTaskDelay(1500);
     set_angles(0.0f, 0.0f, 0.0f, 2000);
-    osDelay(2500);
-
+    vTaskDelay(1500);
+	  ServoBus_Start_Receive();
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(6000));  /* 等待20秒，确保演示完成 */
     /* 基本动作演示完毕，删除本任务 */
 //    vTaskDelete(NULL);
 }
@@ -268,9 +270,9 @@ void requirement_4(void *argument)
             {
                 /* 计算当前角度误差 */
                 float expected_angle = 0.0f;
-                if(g_servo_id == 1) expected_angle = arm.motor[0].motor_pos;
-                else if(g_servo_id == 2) expected_angle = arm.motor[1].motor_pos;
-                else if(g_servo_id == 3) expected_angle = arm.motor[2].motor_pos;
+                if(g_servo_id == 1) expected_angle = arm.motor[0].motor_tx_pos;
+                else if(g_servo_id == 2) expected_angle = arm.motor[1].motor_tx_pos;
+                else if(g_servo_id == 3) expected_angle = arm.motor[2].motor_tx_pos;
                 
                 float error = expected_angle - angle;
                 
@@ -281,7 +283,7 @@ void requirement_4(void *argument)
                     float new_target_angle = angle + error * 0.8f;  // 80%的误差补偿
                     
                     /* 根据ID设置新的目标角度 */
-                    float th1 = arm.motor[0].motor_pos, th2 = arm.motor[1].motor_pos, th3 = arm.motor[2].motor_pos;
+                    float th1 = arm.motor[0].motor_tx_pos, th2 = arm.motor[1].motor_tx_pos, th3 = arm.motor[2].motor_tx_pos;
                     if(g_servo_id == 1) th1 = new_target_angle;
                     else if(g_servo_id == 2) th2 = new_target_angle;
                     else if(g_servo_id == 3) th3 = new_target_angle;
