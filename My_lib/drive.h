@@ -7,11 +7,13 @@
 #include "main.h"
 #include "commuction.h"
 // 机械臂连杆长度 (单位：米)
-#define L1          0.15f   // joint1 和 joint2 的固定长度
-#define L2          0.15f   // joint2 和 joint3
-#define L3          0.05f   // joint3 和末端
-
-#define BASE_HEIGHT 0.05f   // 基座高度
+//#define L1          0.05f   // joint1 和 joint2 的固定长度
+//#define L2          0.07f   // joint2 和 joint3
+//#define L3          0.1f   // joint3 和末端
+extern float L1;
+extern float L2;
+extern float L3;
+#define BASE_HEIGHT 0.075f   // 基座高度
 
 #define RAD_TO_ANGLE 57.2957795f
 #define EPS 1e-3f
@@ -21,8 +23,8 @@
 #define THETA1_MAX 270.0f
 #define THETA2_MIN 0.0f
 #define THETA2_MAX 180.0f
-#define THETA3_MIN 0.0f
-#define THETA3_MAX 180.0f
+#define THETA3_MIN -90.0f
+#define THETA3_MAX 90.0f
 
 // 关节角度
 extern float motor1;  // joint1 旋转角
