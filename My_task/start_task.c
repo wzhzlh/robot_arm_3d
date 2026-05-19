@@ -44,15 +44,15 @@ static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 /* 通过逆运动学将末端移动到指定空间坐标 (x,y,z 单位:米) */
 static void move_to(float x, float y, float z, uint16_t move_time)
 {
-    ServoBus_t tmp;
-    tmp.target_pos.x = (double)x;
-    tmp.target_pos.y = (double)y;
-    tmp.target_pos.z = (double)z;
-    tmp.target_time  = move_time;
+//    ServoBus_t tmp;
+    arm.target_pos.x = (double)x;
+    arm.target_pos.y = (double)y;
+    arm.target_pos.z = (double)z;
+    arm.target_time  = move_time;
 
-    IK_3D(&tmp);   /* 结果写入全局 motor1/motor2/motor3 */
+    IK_3D(&arm);   /* 结果写入全局 motor1/motor2/motor3 */
 
-    set_angles(tmp.motor[0].motor_tx_pos, tmp.motor[1].motor_tx_pos, tmp.motor[2].motor_tx_pos, move_time);
+    set_angles(arm.motor[0].motor_tx_pos, arm.motor[1].motor_tx_pos, arm.motor[2].motor_tx_pos, move_time);
 }
 
 /* ---------------------------------------------------------------
@@ -76,46 +76,45 @@ static void line_interp(float x0, float y0, float z0,
 
 void requirement_1(void *argument)
 {
-    /* 等待系统稳定 */
-	   arm_init();
-     vTaskDelay(500);
+//    /* 等待系统稳定 */
+//	   arm_init();
+//     vTaskDelay(500);
 
-TickType_t xLastWakeTime = xTaskGetTickCount();
-//    /* ---- 归零：所有关节回到 0 度 ---- */
-    set_angles(0.0f, 0.0f, 0.0f, 1000);
-    vTaskDelay(1000);
+//TickType_t xLastWakeTime = xTaskGetTickCount();
+////    /* ---- 归零：所有关节回到 0 度 ---- */
+//    set_angles(0.0f, 0.0f, 0.0f, 1000);
+//    vTaskDelay(1000);
 
-    /* ====================================================
-     * Step 1：joint1 水平旋转  0 -> 270 -> 0
-     * ==================================================== */
-    set_angles(270.0f, 0.0f, 0.0f, 2000);
-    vTaskDelay(1500);
-     ServoBus_ReadAngle(1);
-    set_angles(0.0f, 0.0f, 0.0f, 2000);
-    vTaskDelay(1500);
+//    /* ====================================================
+//     * Step 1：joint1 水平旋转  0 -> 270 -> 0
+//     * ==================================================== */
+//    set_angles(270.0f, 0.0f, 0.0f, 2000);
+//    vTaskDelay(1500);
+//     ServoBus_ReadAngle(1);
+//    set_angles(0.0f, 0.0f, 0.0f, 2000);
+//    vTaskDelay(1500);
 
-    /* ====================================================
-     * Step 2：joint2 竖直旋转  0 -> 180 -> 0
-     * ==================================================== */
-    set_angles(0.0f, 180.0f, 0.0f, 2000);
-    vTaskDelay(2500);
+//    /* ====================================================
+//     * Step 2：joint2 竖直旋转  0 -> 180 -> 0
+//     * ==================================================== */
+//    set_angles(0.0f, 180.0f, 0.0f, 2000);
+//    vTaskDelay(2500);
 
-    set_angles(0.0f, 0.0f, 0.0f, 2000);
-    vTaskDelay(2500);
+//    set_angles(0.0f, 0.0f, 0.0f, 2000);
+//    vTaskDelay(2500);
 
-    /* ====================================================
-     * Step 3：joint3 末端旋转  0 -> 180 -> 0
-     * ==================================================== */
-    set_angles(0.0f, 0.0f, -90.0f, 2000);
-    vTaskDelay(1500);
-    set_angles(0.0f, 0.0f, 90.0f, 2000);
-    vTaskDelay(1500);
-    set_angles(0.0f, 0.0f, 0.0f, 2000);
-    vTaskDelay(1500);
-	  ServoBus_Start_Receive();
-    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(6000));  /* 等待20秒，确保演示完成 */
-    /* 基本动作演示完毕，删除本任务 */
-//    vTaskDelete(NULL);
+//    /* ====================================================
+//     * Step 3：joint3 末端旋转  0 -> 180 -> 0
+//     * ==================================================== */
+//    set_angles(0.0f, 0.0f, -90.0f, 2000);
+//    vTaskDelay(1500);
+//    set_angles(0.0f, 0.0f, 90.0f, 2000);
+//    vTaskDelay(1500);
+//    set_angles(0.0f, 0.0f, 0.0f, 2000);
+//    vTaskDelay(1500);
+//    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(6000));  /* 等待20秒，确保演示完成 */
+//    /* 基本动作演示完毕，删除本任务 */
+////    vTaskDelete(NULL);
 }
 
 /* ---------------------------------------------------------------
@@ -143,41 +142,44 @@ TickType_t xLastWakeTime = xTaskGetTickCount();
 /* 每条边插补步数和每步时间 */
 #define INTERP_STEPS    10
 #define INTERP_STEP_MS  100
-
+float x,y,z;
 void requirement_2(void *argument)
 {
     /* 等待 start_task 完成基本动作演示 */
-    osDelay(20000);
+//    osDelay(20000);
 
     /* 先移动到正方形起点 P1，抬升到位 */
-    move_to(SQ_X0, SQ_Y0, SQ_Z, 1500);
-    osDelay(2000);
+    /* 确保舵机参数已初始化，移动到起点 P1 */
+    arm_init();
+        move_to(0, 0, SQ_Z, 1500);
+//	    move_to(x, y, z, 1500);
+       osDelay(1600);
 
-    for (;;)
-    {
-        /* P1 -> P2 : x 方向正向 */
-        line_interp(SQ_X0, SQ_Y0, SQ_Z,
-                    SQ_X1, SQ_Y0, SQ_Z,
-                    INTERP_STEPS, INTERP_STEP_MS);
+//    for (;;)
+//    {
+//        /* P1 -> P2 : x 方向正向 */
+//        line_interp(SQ_X0, SQ_Y0, SQ_Z,
+//                    SQ_X1, SQ_Y0, SQ_Z,
+//                    INTERP_STEPS, INTERP_STEP_MS);
 
-        /* P2 -> P3 : y 方向正向 */
-        line_interp(SQ_X1, SQ_Y0, SQ_Z,
-                    SQ_X1, SQ_Y1, SQ_Z,
-                    INTERP_STEPS, INTERP_STEP_MS);
+//        /* P2 -> P3 : y 方向正向 */
+//        line_interp(SQ_X1, SQ_Y0, SQ_Z,
+//                    SQ_X1, SQ_Y1, SQ_Z,
+//                    INTERP_STEPS, INTERP_STEP_MS);
 
-        /* P3 -> P4 : x 方向反向 */
-        line_interp(SQ_X1, SQ_Y1, SQ_Z,
-                    SQ_X0, SQ_Y1, SQ_Z,
-                    INTERP_STEPS, INTERP_STEP_MS);
+//        /* P3 -> P4 : x 方向反向 */
+//        line_interp(SQ_X1, SQ_Y1, SQ_Z,
+//                    SQ_X0, SQ_Y1, SQ_Z,
+//                    INTERP_STEPS, INTERP_STEP_MS);
 
-        /* P4 -> P1 : y 方向反向，闭合 */
-        line_interp(SQ_X0, SQ_Y1, SQ_Z,
-                    SQ_X0, SQ_Y0, SQ_Z,
-                    INTERP_STEPS, INTERP_STEP_MS);
+//        /* P4 -> P1 : y 方向反向，闭合 */
+//        line_interp(SQ_X0, SQ_Y1, SQ_Z,
+//                    SQ_X0, SQ_Y0, SQ_Z,
+//                    INTERP_STEPS, INTERP_STEP_MS);
 
-        /* 每圈结束停留 500ms */
-        osDelay(500);
-    }
+//        /* 每圈结束停留 500ms */
+//        osDelay(500);
+//    }
 }
 
 /* ---------------------------------------------------------------

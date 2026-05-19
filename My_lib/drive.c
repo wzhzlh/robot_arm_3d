@@ -4,6 +4,9 @@
 // 共面角度误差阈值(°)
 #define COPLANAR_ERROR 1.0f
 #define M_PI 3.14159265358979323846f
+float L1=0.05;
+float L2=0.07;
+float L3=0.1;
 // 数值限幅
 float clamp(float val, float min, float max)
 {
@@ -19,7 +22,7 @@ void IK_2D(ServoBus_t *robot_arm)
     float B = L3;
     float r = sqrtf(robot_arm->target_pos.x * robot_arm->target_pos.x + 
                     robot_arm->target_pos.y * robot_arm->target_pos.y);
-    float z = robot_arm->target_pos.z-L1;
+    float z = robot_arm->target_pos.z;
     float d = sqrtf(r*r + z*z);
 
     // 工作空间边界约束
@@ -41,8 +44,8 @@ void IK_2D(ServoBus_t *robot_arm)
     float theta2 = atan2f(z, r) + atan2f(S, C) + M_PI/2;
 
     // 角度转换、偏置、限幅
-    robot_arm->motor[1].motor_tx_pos = theta2 * RAD_TO_ANGLE + robot_arm->motor[0].offset;
-    robot_arm->motor[2].motor_tx_pos = theta3 * RAD_TO_ANGLE + robot_arm->motor[1].offset;
+    robot_arm->motor[1].motor_tx_pos = theta2 * RAD_TO_ANGLE ;
+    robot_arm->motor[2].motor_tx_pos = theta3 * RAD_TO_ANGLE ;
 
     robot_arm->motor[1].motor_tx_pos = clamp(robot_arm->motor[1].motor_tx_pos, THETA2_MIN, THETA2_MAX);
     robot_arm->motor[2].motor_tx_pos = clamp(robot_arm->motor[2].motor_tx_pos, THETA3_MIN, THETA3_MAX);
@@ -57,13 +60,13 @@ void IK_3D(ServoBus_t *robot_arm)
     // 目标关节1角度
     float theta1_target_deg = atan2f(y, x) * RAD_TO_ANGLE;
     // 当前关节1角度
-    float theta1_current_deg = robot_arm->motor[0].motor_tx_pos;
+		ServoBus_Start_Receive();
+    float theta1_current_deg = robot_arm->motor[0].motor_rx_pos;
 
     // 非共面：旋转关节1对齐
     if(fabs(theta1_target_deg - theta1_current_deg) > COPLANAR_ERROR)
     {
-        robot_arm->motor[0].motor_tx_pos = theta1_target_deg + robot_arm->motor[0].offset;
-        robot_arm->motor[0].motor_tx_pos = clamp(robot_arm->motor[0].motor_tx_pos, THETA1_MIN, THETA1_MAX);
+         robot_arm->motor[0].motor_tx_pos = theta1_target_deg;
     }
 
     // 共面后2D求解
