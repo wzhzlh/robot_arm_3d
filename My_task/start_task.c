@@ -27,7 +27,7 @@ static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 {
 	 
     arm.motor[0].id = 0;
-    arm.motor[0].motor_tx_pos = (uint16_t)angle_to_pwm_id0(th1);
+    arm.motor[0].motor_tx_tx_pos = (uint16_t)angle_to_pwm_id0(th1);
     arm.target_time  = move_time;
 
     arm.motor[1].id = 1;
@@ -149,11 +149,8 @@ void requirement_2(void *argument)
 //    osDelay(20000);
 
     /* 先移动到正方形起点 P1，抬升到位 */
-    /* 确保舵机参数已初始化，移动到起点 P1 */
-    arm_init();
-        move_to(0, 0, SQ_Z, 1500);
-//	    move_to(x, y, z, 1500);
-       osDelay(1600);
+    move_to(SQ_X0, SQ_Y0, SQ_Z, 1500);
+    osDelay(2000);
 
 //    for (;;)
 //    {
