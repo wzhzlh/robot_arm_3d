@@ -151,7 +151,7 @@ void requirement_2(void *argument)
     /* 先移动到正方形起点 P1，抬升到位 */
     /* 确保舵机参数已初始化，移动到起点 P1 */
     arm_init();
-        move_to(0, 0, SQ_Z, 1500);
+        move_to(0, 0, 0.15, 1500);
 //	    move_to(x, y, z, 1500);
        osDelay(1600);
 

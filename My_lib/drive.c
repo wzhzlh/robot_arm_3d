@@ -14,39 +14,56 @@ float clamp(float val, float min, float max)
     if(val > max) return max;
     return val;
 }
+float A,B,r,h,d,cos3,theta3,C,S,theta2;
 
-// 2D逆解：关节2、3
+// 2D逆解：关节2、3（完全按你给的数学公式实现）
 void IK_2D(ServoBus_t *robot_arm)
 {
-    float A = L2;
-    float B = L3;
-    float r = sqrtf(robot_arm->target_pos.x * robot_arm->target_pos.x + 
-                    robot_arm->target_pos.y * robot_arm->target_pos.y);
-    float z = robot_arm->target_pos.z;
-    float d = sqrtf(r*r + z*z);
+    A = L2;
+    B = L3;
+    
+    // 1. 计算 r = sqrt(x² + y²)
+    r = sqrtf(robot_arm->target_pos.x * robot_arm->target_pos.x + 
+              robot_arm->target_pos.y * robot_arm->target_pos.y);
+    
+    // 2. 计算 h = z - L1  【关键！你之前漏掉了减 L1】
+    h = robot_arm->target_pos.z - L1;
 
-    // 工作空间边界约束
+    // 3. 计算 d = sqrt(r² + h²)
+    d = sqrtf(r*r + h*h);
+
+    // 工作空间约束
     if(d > A + B)
     {
-        r = r * (A+B)/d;
-        z = z * (A+B)/d;
-        d = A+B;
+        d = A + B;
+    }
+    if(d < fabs(A - B))
+    {
+        d = fabs(A - B);
     }
 
-    // 计算关节3角度
-    float cos3 = (A*A + B*B - d*d) / (2*A*B);
+    // ==============================
+    // 步骤1：求 theta3
+    // ==============================
+    cos3 = ( L2*L2 + L3*L3-r*r - h*h) / (2.0f * L2 * L3);
     cos3 = clamp(cos3, -1.0f, 1.0f);
-    float theta3 = acosf(cos3);
+    theta3 = acosf(cos3);
 
-    // 计算关节2角度
-    float C = L2 + L3 * cosf(theta3);
-    float S = L3 * sinf(theta3);
-    float theta2 = atan2f(z, r) + atan2f(S, C) + M_PI/2;
+    // 步骤2：求 theta2（完全按公式）
+    // ==============================
+    C = L2 + L3 * cosf(theta3);
+    S = L3 * sinf(theta3);
 
-    // 角度转换、偏置、限幅
-    robot_arm->motor[1].motor_tx_pos = theta2 * RAD_TO_ANGLE ;
-    robot_arm->motor[2].motor_tx_pos = theta3 * RAD_TO_ANGLE ;
+    // 标准公式：theta2 = atan2(Cr - Sh, Ch + Sr)
+    theta2 = atan2f( C*r - S*h , C*h + S*r )+M_PI;
+theta2=2.785;
+    // ==============================
+    // 角度输出
+    // ==============================
+    robot_arm->motor[1].motor_tx_pos = theta2 * RAD_TO_ANGLE;
+    robot_arm->motor[2].motor_tx_pos = theta3 * RAD_TO_ANGLE;
 
+    // 角度限位
     robot_arm->motor[1].motor_tx_pos = clamp(robot_arm->motor[1].motor_tx_pos, THETA2_MIN, THETA2_MAX);
     robot_arm->motor[2].motor_tx_pos = clamp(robot_arm->motor[2].motor_tx_pos, THETA3_MIN, THETA3_MAX);
 }
@@ -61,7 +78,7 @@ void IK_3D(ServoBus_t *robot_arm)
     float theta1_target_deg = atan2f(y, x) * RAD_TO_ANGLE;
     // 当前关节1角度
 		ServoBus_Start_Receive();
-    float theta1_current_deg = robot_arm->motor[0].motor_rx_pos;
+    float theta1_current_deg = (robot_arm->motor[0].motor_rx_pos-500)/7.04;
 
     // 非共面：旋转关节1对齐
     if(fabs(theta1_target_deg - theta1_current_deg) > COPLANAR_ERROR)
@@ -110,6 +127,6 @@ uint16_t angle_to_pwm_id1(float angle)
 // ID2：0° → 1500（你要的特殊零点）
 uint16_t angle_to_pwm_id2(float angle)
 {
-    angle = clamp(angle, -90.0f, 180.0f);
+    angle = clamp(angle, -135.0f, 135.0f);
     return (uint16_t)(angle * 7.407f + 1500.0f);
 }

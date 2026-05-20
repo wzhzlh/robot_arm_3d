@@ -1,5 +1,0 @@
---c99 -c --cpu Cortex-M4.fp.sp -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../My_lib -I ../My_task
--I.\RTE\_robot_arm_3d
--IC:\Users\Lenovo\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include
--D__UVISION_VERSION="534" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx
--o robot_arm_3d\drive.o --omf_browse robot_arm_3d\drive.crf --depend robot_arm_3d\drive.d "..\My_lib\drive.c"
