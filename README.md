@@ -98,7 +98,7 @@ robot_arm_3d/
     ├── launch.json             # 调试配置
     ├── tasks.json              # 构建/烧录/调试任务
     ├── settings.json           # 编辑器设置
-    └── extensions.json         # 推荐扩展
+    └── extensions.json         # 推荐openocd -f openocd.cfg -c "program build/Debug/robot_arm_3d.elf verify reset exit"扩展
 ```
 
 ## 固件内存占用
