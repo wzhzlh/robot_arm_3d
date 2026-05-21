@@ -149,12 +149,15 @@ void requirement_2(void *argument)
     /* ---- 初始化舵机参数 ---- */
     arm_init();
 
+    /* 检查并恢复串口DMA错误（在任务上下文中处理） */
+    ServoBus_ErrorRecovery();
+
     /* ---- 上电归零：所有关节回到 0 度 ---- */
     // set_angles(0.0f, 0.0f, 0.0f, 2000);
     // osDelay(2500);
 
     /* 先移动到正方形起点 P1，抬升到位 */
-    move_to(0, 0, 0.15, 1500);
+    move_to(0, 0.05, 0.15, 1500);
     osDelay(2000);
 
 //    for (;;)

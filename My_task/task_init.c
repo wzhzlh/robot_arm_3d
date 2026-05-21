@@ -20,7 +20,7 @@ void task_init()
 //         &requirement_1_Handle);
 	xTaskCreate(requirement_2,
          "requirement_2",
-          256,
+          512,  /* 增大栈空间，避免栈溢出 */
           NULL,
           4,
           &requirement_2_Handle);
