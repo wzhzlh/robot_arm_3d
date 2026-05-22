@@ -7,6 +7,8 @@ char a[52];  // 拼接指令
 char b[52];// 发送指令（对比用）
 char c[52];
 int error_cnt;
+// ==================== DMA安全发送缓冲区（全局！不能用栈上变量传给DMA） ====================
+static char dma_tx_buf[256];       // 最大的指令长度
 // ==================== 舵机接收缓冲区 ====================
 uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存
 uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存
@@ -24,10 +26,17 @@ HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd)
 
     if(servo_tx_busy == 1)
         return HAL_BUSY;
-    memcpy(c,cmd,strlen(cmd));
+
+    uint16_t len = strlen(cmd);
+    if(len >= sizeof(dma_tx_buf))
+        return HAL_ERROR;
+
+    // 拷贝到全局DMA安全缓冲区再发送，避免DMA读栈上已释放内存
+    memcpy(dma_tx_buf, cmd, len);
+    memcpy(c, cmd, len);
     servo_tx_busy = 1;
-    HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, (uint8_t*)cmd, strlen(cmd));
-     memcpy(b, cmd, strlen(cmd));
+    HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, (uint8_t*)dma_tx_buf, len);
+    memcpy(b, cmd, len);
     if(status != HAL_OK)
     {
         servo_tx_busy = 0;
@@ -51,20 +60,17 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
  * @param  huart: 串口句柄
  * @retval None
  */
+// 错误恢复请求标志（在中断中设置，任务中处理）
+volatile uint8_t servo_error_pending = 0;
+
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
     if(huart == &huart2)
     {
-        // 出错后复位所有状态
-        servo_tx_busy = 0;                // 清除发送忙标志
-        servo_rx_len = 0;
-        // 清空接收缓存
-        memset(servo_rx_buf, 0, SERVO_RX_BUF_LEN);
-        memset(servo_rx_data, 0, SERVO_RX_BUF_LEN);
-
-        // 重启接收，防止串口卡死
-        ServoBus_Start_Receive();
-			error_cnt++;
+        // 中断中只设置标志，不调用任何 HAL DMA 函数！
+        servo_tx_busy = 0;
+        servo_error_pending = 1;
+        error_cnt++;
     }
 }
 
@@ -74,13 +80,25 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
  */
 void ServoBus_Start_Receive(void)
 {
-    HAL_UART_AbortReceive(&huart2);
-	  HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
-		ServoBus_ReadAngle(0);
-		ServoBus_ReadAngle(1);
-		ServoBus_ReadAngle(2);
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
     __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+}
 
+// 在任务上下文中安全恢复串口（不能中断中调用）
+void ServoBus_ErrorRecovery(void)
+{
+    if(!servo_error_pending) return;
+    servo_error_pending = 0;
+
+    // 中止所有UART2的DMA操作
+    HAL_UART_Abort(&huart2);
+
+    servo_rx_len = 0;
+    memset(servo_rx_buf, 0, SERVO_RX_BUF_LEN);
+    memset(servo_rx_data, 0, SERVO_RX_BUF_LEN);
+
+    // 重新启动接收
+    ServoBus_Start_Receive();
 }
 
 /**
@@ -98,11 +116,14 @@ void ServoBus_ParseReply(void)
     }
     if(strstr((char *)servo_rx_data, "P") != NULL)
     {
-      sscanf((char *)servo_rx_data, "#%03uP%04u!",(int*) &g_servo_id, (int*)&g_servo_pwm);
+      unsigned int tmp_id, tmp_pwm;
+      sscanf((char *)servo_rx_data, "#%03uP%04u!", &tmp_id, &tmp_pwm);
+      g_servo_id = (uint8_t)tmp_id;
+      g_servo_pwm = (uint16_t)tmp_pwm;
       g_servo_reply_ok = 1;
-			if(g_servo_reply_ok){
-		  arm.motor[g_servo_id].motor_rx_pos=g_servo_pwm;
-			}
+      if(g_servo_id < 3) {
+          arm.motor[g_servo_id].motor_rx_pos = g_servo_pwm;
+      }
     }
     // 清空缓存
     memset(servo_rx_data, 0, SERVO_RX_BUF_LEN);

@@ -31,6 +31,9 @@ OnProjectLoad()
 
     // 添加源代码搜索路径
     Project.AddPathSubstitute("/home/zhangjiayi/robot_arm_3d", "/home/zhangjiayi/robot_arm_3d");
+
+    // 启用 FreeRTOS 调试支持（Cortex-M4F 端口）
+    Project.SetOSPlugin("FreeRTOS", 0);
 }
 
 OnTerminate()

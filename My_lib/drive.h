@@ -23,8 +23,8 @@ extern float L3;
 #define THETA1_MAX 270.0f
 #define THETA2_MIN 0.0f
 #define THETA2_MAX 180.0f
-#define THETA3_MIN -90.0f
-#define THETA3_MAX 90.0f
+#define THETA3_MIN -135.0f
+#define THETA3_MAX 135.0f
 
 // 关节角度
 extern float motor1;  // joint1 旋转角

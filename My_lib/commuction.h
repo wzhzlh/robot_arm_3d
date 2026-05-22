@@ -21,6 +21,7 @@
 extern uint8_t  g_servo_id ;         // 反馈的舵机ID
 extern uint16_t g_servo_pwm;        // 反馈的PWM值
 extern uint8_t  g_servo_reply_ok;   // 指令执行成功标志
+extern volatile uint8_t servo_error_pending;  // 串口错误恢复标志
 #define SERVO_RX_BUF_LEN 32
 extern uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存
 extern uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存
@@ -66,5 +67,6 @@ HAL_StatusTypeDef ServoBus_Unlock(uint8_t id);
 HAL_StatusTypeDef ServoBus_Lock(uint8_t id);
 void ServoBus_ParseReply();
 void ServoBus_Start_Receive(void);
+void ServoBus_ErrorRecovery(void);     // 任务上下文中安全的错误恢复
 
 #endif
