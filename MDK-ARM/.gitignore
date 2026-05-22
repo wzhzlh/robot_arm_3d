@@ -14,3 +14,29 @@
 *.ept
 *.eide-template
 /Drivers
+/
+
+# ====================
+# 编译产物（Keil MDK）
+# ====================
+*.crf
+*.d
+*.dep
+*.axf
+*.hex
+*.bin
+*.htm
+*.lnp
+*.sct
+*.lst
+*.iex
+*.bak
+
+# ====================
+# 调试/用户配置文件
+# ====================
+DebugConfig/
+*.uvguix.*
+JLinkLog.txt
+JLinkSettings.ini
+EventRecorderStub.scvd
