@@ -15,20 +15,20 @@
 ServoBus_t arm;
 void arm_init(void)
 {
-    set_angles(0, 0, 0, 1000);
     arm.motor[0].offset = 500.0f;
     arm.motor[1].offset = 500.0f;
     arm.motor[2].offset = 1500.0f;
     arm.motor[0].id = 0;
     arm.motor[1].id = 1;
     arm.motor[2].id = 2;
+    set_angles(90,0, 0, 1000);
 }
 /* 将三个关节角度(度)写入舵机结构体并发送 */
 static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 {
 	 
     arm.motor[0].id = 0;
-    arm.motor[0].motor_tx_pos = (uint16_t)angle_to_pwm_id0(th1);
+    arm.motor[0].motor_tx_pos = (uint16_t)angle_to_pwm_id0(th1*2/3);
     arm.target_time  = move_time;
 
     arm.motor[1].id = 1;
@@ -56,22 +56,81 @@ static void move_to(float x, float y, float z, uint16_t move_time)
     set_angles(arm.motor[0].motor_tx_pos, arm.motor[1].motor_tx_pos, arm.motor[2].motor_tx_pos, move_time);
 }
 
+typedef struct {
+    float k;
+    float b;
+} LinearAxisTrajectory;
+
+typedef struct {
+    LinearAxisTrajectory lx;
+    LinearAxisTrajectory ly;
+    LinearAxisTrajectory lz;
+    uint32_t total_time_ms;
+} LinearTrajectory3D;
+
+static float linear_traj_eval(const LinearAxisTrajectory *axis, float time_ms)
+{
+    return axis->k * time_ms + axis->b;
+}
+
+static void update_linear_trajectory(LinearTrajectory3D *traj,
+                                     float x0, float y0, float z0,
+                                     float x1, float y1, float z1,
+                                     uint32_t total_time_ms)
+{
+    float time_ms = (float)total_time_ms;
+
+    traj->total_time_ms = total_time_ms;
+    traj->lx.k = (x1 - x0) / time_ms;
+    traj->lx.b = x0;
+    traj->ly.k = (y1 - y0) / time_ms;
+    traj->ly.b = y0;
+    traj->lz.k = (z1 - z0) / time_ms;
+    traj->lz.b = z0;
+}
+
 /* ---------------------------------------------------------------
- * 直线插补：从 (x0,y0,z0) 到 (x1,y1,z1)，分 steps 步
- *   step_time : 每步运动时间(ms)，同时也是每步等待时间
+ * 直线轨迹：先建立 x(t)=kx*t+b, y(t)=ky*t+b, z(t)=kz*t+b
+ *   再按 step_time 周期采样执行，保证末端按笛卡尔直线运动
  * --------------------------------------------------------------- */
 static void line_interp(float x0, float y0, float z0,
                         float x1, float y1, float z1,
                         uint8_t steps, uint16_t step_time)
 {
-    for (uint8_t i = 1; i <= steps; i++)
+    LinearTrajectory3D traj;
+    uint32_t elapsed_ms = 0;
+
+    if ((steps == 0u) || (step_time == 0u))
     {
-        float t = (float)i / (float)steps;
-        float x = x0 + t * (x1 - x0);
-        float y = y0 + t * (y1 - y0);
-        float z = z0 + t * (z1 - z0);
-        move_to(x, y, z, step_time);
-        osDelay(step_time + 20);   /* 等待到位，留20ms余量 */
+        return;
+    }
+
+    update_linear_trajectory(&traj, x0, y0, z0, x1, y1, z1, (uint32_t)steps * step_time);
+
+    while (elapsed_ms < traj.total_time_ms)
+    {
+        uint32_t next_elapsed_ms = elapsed_ms + step_time;
+        uint16_t move_time_ms;
+        float sample_time_ms;
+        float x;
+        float y;
+        float z;
+
+        if (next_elapsed_ms > traj.total_time_ms)
+        {
+            next_elapsed_ms = traj.total_time_ms;
+        }
+
+        move_time_ms = next_elapsed_ms - elapsed_ms;
+        sample_time_ms = (float)next_elapsed_ms;
+        x = linear_traj_eval(&traj.lx, sample_time_ms);
+        y = linear_traj_eval(&traj.ly, sample_time_ms);
+        z = linear_traj_eval(&traj.lz, sample_time_ms);
+
+        move_to(x, y, z, move_time_ms);
+        // osDelay(move_time_ms + 20u);
+
+        elapsed_ms = next_elapsed_ms;
     }
 }
 
@@ -141,8 +200,8 @@ void requirement_1(void *argument)
 #define SQ_Y1   0.05f   /* y 最大 */
 
 /* 每条边插补步数和每步时间 */
-#define INTERP_STEPS    10
-#define INTERP_STEP_MS  100
+#define INTERP_STEPS    5
+#define INTERP_STEP_MS  200
 float x,y,z;
 void requirement_2(void *argument)
 {
@@ -155,10 +214,26 @@ void requirement_2(void *argument)
     /* ---- 上电归零：所有关节回到 0 度 ---- */
     // set_angles(0.0f, 0.0f, 0.0f, 2000);
     // osDelay(2500);
+    /* 先移动到轨迹起点 */
+    // move_to(0.05,0.05,0.15, 1000);
+    // osDelay(1020);
 
-    /* 先移动到正方形起点 P1，抬升到位 */
-    move_to(0, 0.05, 0.15, 1500);
-    osDelay(2000);
+    for(;;){
+
+    line_interp(0.05f, 0.05f, 0.15f,
+                -0.05f, 0.05f, 0.15f,
+                INTERP_STEPS, INTERP_STEP_MS);
+    line_interp(-0.05f, 0.05f, 0.15f,
+                -0.05f, 0.05f, 0.05f,
+                INTERP_STEPS, INTERP_STEP_MS);
+    line_interp(-0.05f, 0.05f, 0.05f,
+                0.05f, 0.05f, 0.05f,
+                INTERP_STEPS, INTERP_STEP_MS);
+    line_interp(0.05f, 0.05f, 0.05f,
+                0.05f, 0.05f, 0.15f,
+                INTERP_STEPS, INTERP_STEP_MS);
+}
+
 
 //    for (;;)
 //    {
@@ -319,5 +394,3 @@ void requirement_5(void *argument)
     //     osDelay(20);
     // }
 }
-
-
