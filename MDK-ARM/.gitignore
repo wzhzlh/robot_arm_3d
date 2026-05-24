@@ -16,35 +16,27 @@
 /Drivers
 /
 
-# =======================
-# Keil MDK 编译中间产物
-# =======================
-
-# 编译器中间文件
+# ====================
+# 编译产物（Keil MDK）
+# ====================
 *.crf
 *.d
 *.dep
-
-# 输出文件
 *.axf
 *.hex
 *.bin
 *.htm
 *.lnp
 *.sct
-
-# 列表文件
 *.lst
+*.iex
+*.bak
 
-# 调试/用户配置
+# ====================
+# 调试/用户配置文件
+# ====================
 DebugConfig/
 *.uvguix.*
 JLinkLog.txt
 JLinkSettings.ini
-
-# 事件记录
 EventRecorderStub.scvd
-
-# 其他
-*.iex
-*.bakMDK-ARM
