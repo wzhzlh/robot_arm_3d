@@ -28,7 +28,7 @@ static void set_angles(float th1, float th2, float th3, uint16_t move_time)
 {
 	 
     arm.motor[0].id = 0;
-    arm.motor[0].motor_tx_pos = (uint16_t)angle_to_pwm_id0(th1*2/3);
+    arm.motor[0].motor_tx_pos = (uint16_t)angle_to_pwm_id0(th1*7.5f/9);
     arm.target_time  = move_time;
 
     arm.motor[1].id = 1;
