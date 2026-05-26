@@ -43,8 +43,9 @@ typedef struct{
 typedef struct {
   uint8_t id;
   uint16_t motor_tx_pos; // 关节角度值
-	uint16_t motor_rx_pos; 
+	uint16_t motor_rx_pos; // 接收的角度值
   float   offset;    // 偏置校准
+  int count;     // 计数
 }motor_t;
 // ==================== 机械臂/舵机总线结构体 ====================
 typedef struct
@@ -53,6 +54,7 @@ typedef struct
     state_t  state_pos;    // 当前状态坐标
     uint16_t target_time;  // 运行时间(ms)
     motor_t motor[3];    // 3个关节的舵机信息
+	int count;
 } ServoBus_t;
 
 _Pragma("pack()") // 恢复默认对齐

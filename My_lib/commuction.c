@@ -81,6 +81,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 void ServoBus_Start_Receive(void)
 {
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
+    
+    ServoBus_ReadAngle(1);
+    ServoBus_ReadAngle(2);
+    ServoBus_ReadAngle(3);
+    
     __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
 }
 

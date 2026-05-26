@@ -3,7 +3,7 @@
 #include "start_task.h"
 #include "math.h"
 
-TaskHandle_t requirement_1_Handle;
+TaskHandle_t requirement_Handle;
 TaskHandle_t requirement_2_Handle;
 TaskHandle_t requirement_3_Handle;
 TaskHandle_t requirement_4_Handle;  
@@ -12,12 +12,12 @@ void task_init()
 {
 	vPortEnterCritical();
 
-//	xTaskCreate(requirement_1,
-//        "requirement_1",
+//	xTaskCreate(requirement,
+//        "requirement",
 //         256,
 //         NULL,
 //         4,
-//         &requirement_1_Handle);
+//         &requirement_Handle);
 	xTaskCreate(requirement_2,
          "requirement_2",
           512,  /* 增大栈空间，避免栈溢出 */
