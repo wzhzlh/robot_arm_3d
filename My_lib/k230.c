@@ -1,5 +1,7 @@
 #include "k230.h"
 #include "usart.h"
+#include "FreeRTOS.h"
+#include "semphr.h"
 
 // ==================== 接收缓冲区（DMA专用） ====================
 static uint8_t k230_rx_buf[K230_RX_BUF_LEN];   // DMA原始接收缓存
@@ -90,23 +92,27 @@ void K230_ParseFrame(uint8_t *buf, uint16_t len)
 }
 
 /**
- * @brief  串口空闲中断处理函数（接收舵机回传数据）
+ * @brief  串口空闲中断处理函数（接收舵机回传数据 / K230视觉数据）
  */
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
 {
     // 只处理舵机串口(USART2)
     if(huart == &huart2)
     {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
         // 1. 保存接收长度（官方直接给出，无需手动计算）
         servo_rx_len = size; 
         // 2. 拷贝数据到解析缓冲区
         memcpy(servo_rx_data, servo_rx_buf, servo_rx_len);
-        // 3. 解析舵机反馈帧
-        ServoBus_ParseReply();
-        // 4. 重新启动DMA+空闲中断接收（等待下一帧）
-        ServoBus_Start_Receive();
+        // 3. 重启DMA接收（仅重启DMA，不发送指令）
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
+        __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+        // 4. 通过二值信号量通知mot_rece任务解析处理
+        xSemaphoreGiveFromISR(servo_rx_sem, &xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
-       // 只处理K230对应的UART3
+   // 只处理K230对应的UART3
    if(huart == &huart3)
    {
        k230_rx_len = size;

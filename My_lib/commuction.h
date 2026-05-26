@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include "main.h"
 #include "usart.h"
+#include "FreeRTOS.h"
+#include "semphr.h"
 // ==================== 众灵舵机 硬件参数 ====================
 #define SERVO_TX_TIMEOUT     100       // 发送超时(ms)
 #define SERVO_BAUDRATE       115200    // 波特率
@@ -22,6 +24,10 @@ extern uint8_t  g_servo_id ;         // 反馈的舵机ID
 extern uint16_t g_servo_pwm;        // 反馈的PWM值
 extern uint8_t  g_servo_reply_ok;   // 指令执行成功标志
 extern volatile uint8_t servo_error_pending;  // 串口错误恢复标志
+
+// ==================== 二值信号量 ====================
+extern SemaphoreHandle_t servo_tx_sem;   // 发送完成信号量（DMA TxCplt ISR中释放）
+extern SemaphoreHandle_t servo_rx_sem;   // 接收完成信号量（空闲中断 ISR中释放）
 #define SERVO_RX_BUF_LEN 32
 extern uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存
 extern uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存
@@ -60,6 +66,7 @@ typedef struct
 _Pragma("pack()") // 恢复默认对齐
 
 // ==================== 函数声明 ====================
+void ServoBus_Init(void);                                  // 初始化信号量
 HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd);
 HAL_StatusTypeDef ServoBus_Move_One(ServoBus_t *servo);
 HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count);
@@ -69,6 +76,7 @@ HAL_StatusTypeDef ServoBus_Unlock(uint8_t id);
 HAL_StatusTypeDef ServoBus_Lock(uint8_t id);
 void ServoBus_ParseReply();
 void ServoBus_Start_Receive(void);
+void ServoBus_TaskReceive(void);       // 任务中等待并处理接收数据
 void ServoBus_ErrorRecovery(void);     // 任务上下文中安全的错误恢复
 
 #endif

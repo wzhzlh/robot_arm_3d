@@ -1,8 +1,12 @@
 #include "commuction.h"
 #include "start_task.h"
 #include <string.h>
+#include "FreeRTOS.h"
+#include "semphr.h"
 
-uint8_t servo_tx_busy = 0;
+uint8_t servo_tx_busy = 0;                     // 保留兼容
+SemaphoreHandle_t servo_tx_sem = NULL;         // 发送完成二值信号量
+SemaphoreHandle_t servo_rx_sem = NULL;         // 接收完成二值信号量
 char a[52];  // 拼接指令
 char b[52];// 发送指令（对比用）
 char c[52];
@@ -19,13 +23,25 @@ uint8_t  g_servo_id = 0;         // 反馈的舵机ID
 uint16_t g_servo_pwm = 0;        // 反馈的PWM值
 uint8_t  g_servo_reply_ok = 0;   // 指令执行成功标志
 
+/**
+ * @brief  舵机总线初始化（创建二值信号量）
+ *         在首次调用ServoBus相关函数前执行
+ */
+void ServoBus_Init(void)
+{
+    if(servo_tx_sem == NULL)
+        servo_tx_sem = xSemaphoreCreateBinary();
+    if(servo_rx_sem == NULL)
+        servo_rx_sem = xSemaphoreCreateBinary();
+}
+
 HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd)
 {
     if(cmd == NULL || strlen(cmd) == 0)
         return HAL_ERROR;
 
-    if(servo_tx_busy == 1)
-        return HAL_BUSY;
+    // 确保信号量已创建
+    if(servo_tx_sem == NULL) ServoBus_Init();
 
     uint16_t len = strlen(cmd);
     if(len >= sizeof(dma_tx_buf))
@@ -34,24 +50,34 @@ HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd)
     // 拷贝到全局DMA安全缓冲区再发送，避免DMA读栈上已释放内存
     memcpy(dma_tx_buf, cmd, len);
     memcpy(c, cmd, len);
-    servo_tx_busy = 1;
+
+    // 清除信号量初始态，然后启动DMA发送（仿485_bus.c模式）
+    xSemaphoreTake(servo_tx_sem, 0);
     HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, (uint8_t*)dma_tx_buf, len);
     memcpy(b, cmd, len);
-    if(status != HAL_OK)
+
+    if(status == HAL_OK)
     {
-        servo_tx_busy = 0;
+        /* 阻塞等待DMA发送完成信号量（由TxCplt ISR释放），超时100ms */
+        if(xSemaphoreTake(servo_tx_sem, pdMS_TO_TICKS(SERVO_TX_TIMEOUT)) != pdTRUE)
+        {
+            status = HAL_TIMEOUT;
+        }
     }
     return status;
 }
 
 /**
- * @brief  DMA发送完成回调
+ * @brief  DMA发送完成回调（ISR中释放发送信号量）
  */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     if(huart == &huart2)
     {
-        servo_tx_busy = 0;
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        servo_tx_busy = 0;  // 保留兼容
+        xSemaphoreGiveFromISR(servo_tx_sem, &xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
 
@@ -77,9 +103,13 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 
 /**
  * @brief  启动DMA+空闲中断接收
+ * @note   在任务上下文中调用（用于初始启动和错误恢复后重启）
  */
 void ServoBus_Start_Receive(void)
 {
+    // 确保信号量已创建
+    if(servo_rx_sem == NULL) ServoBus_Init();
+
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
     
     ServoBus_ReadAngle(1);
@@ -133,6 +163,21 @@ void ServoBus_ParseReply(void)
     // 清空缓存
     memset(servo_rx_data, 0, SERVO_RX_BUF_LEN);
     servo_rx_len = 0;
+}
+
+/**
+ * @brief  在任务上下文中等待并处理舵机反馈数据
+ * @note   阻塞等待二值信号量（ISR收到数据时释放），然后解析帧数据
+ *         将帧解析从ISR移到任务上下文，降低中断负载
+ */
+void ServoBus_TaskReceive(void)
+{
+    // 阻塞等待接收信号量（由HAL_UARTEx_RxEventCallback的ISR中释放）
+    if(xSemaphoreTake(servo_rx_sem, portMAX_DELAY) == pdTRUE)
+    {
+        // 在任务上下文中安全地解析舵机反馈帧
+        ServoBus_ParseReply();
+    }
 }
 
 // ===========================================================================

@@ -32,12 +32,26 @@ requirement5();
 
 void mot_rece(void *argument)
 {
-     ServoBus_ErrorRecovery();
+    /* 初始化舵机串口DMA接收 */
+    ServoBus_Start_Receive();
+
+    for(;;)
+    {
+        /* 在任务上下文中等待并处理舵机反馈 */
+        ServoBus_TaskReceive();
+
+        /* 帧解析完成，g_servo_reply_ok、g_servo_pwm 等已更新 */
+        if(g_servo_reply_ok)
+        {
+            /* 可在此添加闭环控制等逻辑 */
+            g_servo_reply_ok = 0;  /* 清除标志 */
+        }
+    }
 }
 
 void k230_receive(void *argument)
 {
-  
+
 }
 
 /* ---------------------------------------------------------------
