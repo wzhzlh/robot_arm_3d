@@ -3,7 +3,9 @@
 
 // 共面角度误差阈值(°)
 #define COPLANAR_ERROR 5.0f
+#ifndef M_PI
 #define M_PI 3.14159265358979323846f
+#endif
 float L1=0.0555;
 float L2=0.070;
 float L3=0.104;
