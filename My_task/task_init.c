@@ -4,46 +4,39 @@
 #include "math.h"
 
 TaskHandle_t requirement_Handle;
-TaskHandle_t requirement_2_Handle;
-TaskHandle_t requirement_3_Handle;
-TaskHandle_t requirement_4_Handle;  
-TaskHandle_t requirement_5_Handle;
+TaskHandle_t mot_rece_Handle;
+TaskHandle_t k230_receive_Handle;
+TaskHandle_t requirement_2_Handle;  
 void task_init()
 {
 	vPortEnterCritical();
 
 //	xTaskCreate(requirement,
 //        "requirement",
-//         256,
+//         512,
 //         NULL,
 //         4,
 //         &requirement_Handle);
-	xTaskCreate(requirement_2,
-         "requirement_2",
+	xTaskCreate(mot_rece,
+         "mot_rece",
           512,  /* 增大栈空间，避免栈溢出 */
           NULL,
           4,
-          &requirement_2_Handle);
-//	xTaskCreate(requirement_3,
-//        "requirement_3",
+          &mot_rece_Handle);
+//	xTaskCreate(k230_receive,
+//        "k230_receive",
 //         256,
 //         NULL,
 //         4,
-//         &requirement_3_Handle);
+//         &k230_receive_Handle);
 
-//	xTaskCreate(requirement_4,
-//        "requirement_4",
+//	xTaskCreate(requirement_2,
+//        "requirement_2",
 //         256,
 //         NULL,
 //         4,
-//         &requirement_4_Handle);
+//         &requirement_2_Handle);
 //				 
-//	xTaskCreate(requirement_5,
-//        "sensor",       
-//         128,
-//         NULL,
-//         4,
-//         &requirement_5_Handle);
-				 
+
 	      vPortExitCritical();
 }

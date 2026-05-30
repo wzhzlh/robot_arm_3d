@@ -163,6 +163,7 @@ void ServoBus_ParseReply(void)
     // 清空缓存
     memset(servo_rx_data, 0, SERVO_RX_BUF_LEN);
     servo_rx_len = 0;
+    ServoBus_Start_Receive();
 }
 
 /**

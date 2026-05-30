@@ -3,7 +3,9 @@
 
 // 共面角度误差阈值(°)
 #define COPLANAR_ERROR 5.0f
+#ifndef M_PI
 #define M_PI 3.14159265358979323846f
+#endif
 float L1=0.0555;
 float L2=0.070;
 float L3=0.104;
@@ -54,7 +56,7 @@ void IK_3D(ServoBus_t *robot_arm)
     // 目标关节1角度
     float theta1_target_deg = atan2f(y, x) * RAD_TO_ANGLE;
     // 当前关节1角度（直接用已有反馈值，不在这里触发串口操作）
-    float theta1_current_deg = (robot_5arm->motor[0].motor_rx_pos-500)/7.04;
+    float theta1_current_deg = (robot_arm->motor[0].motor_rx_pos-500)/7.04;
 
     // 非共面：旋转关节1对齐
     if(fabs(theta1_target_deg - theta1_current_deg) > COPLANAR_ERROR)
