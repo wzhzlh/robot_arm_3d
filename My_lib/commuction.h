@@ -9,64 +9,60 @@
 #include "usart.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
-// ==================== 众灵舵机 硬件参数 ====================
-#define SERVO_TX_TIMEOUT     100       // 发送超时(ms)
-#define SERVO_BAUDRATE       115200    // 波特率
-#define SERVO_MAX_ID         254       // 最大舵机ID
-#define SERVO_POS_MIN        500       // 最小PWM
-#define SERVO_POS_MAX        2500      // 最大PWM
-#define SERVO_TIME_MIN       0         // 最小运行时间
-#define SERVO_TIME_MAX       9999      // 最大运行时间
 
+#define SERVO_TX_TIMEOUT     100
+#define SERVO_BAUDRATE       115200
+#define SERVO_MAX_ID         254
+#define SERVO_POS_MIN        500
+#define SERVO_POS_MAX        2500
+#define SERVO_TIME_MIN       0
+#define SERVO_TIME_MAX       9999
+#define SERVO_RX_BUF_LEN     32
 
-// ==================== 新增：解析后存储的舵机数据 ====================
-extern uint8_t  g_servo_id ;         // 反馈的舵机ID
-extern uint16_t g_servo_pwm;        // 反馈的PWM值
-extern uint8_t  g_servo_reply_ok;   // 指令执行成功标志
-extern volatile uint8_t servo_error_pending;  // 串口错误恢复标志
+extern uint8_t g_servo_id;
+extern uint16_t g_servo_pwm;
+extern uint8_t g_servo_reply_ok;
+extern volatile uint8_t servo_error_pending;
 
-// ==================== 二值信号量 ====================
-extern SemaphoreHandle_t servo_tx_sem;   // 发送完成信号量（DMA TxCplt ISR中释放）
-extern SemaphoreHandle_t servo_rx_sem;   // 接收完成信号量（空闲中断 ISR中释放）
-#define SERVO_RX_BUF_LEN 32
-extern uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];  // DMA原始接收缓存
-extern uint8_t servo_rx_data[SERVO_RX_BUF_LEN]; // 解析用缓存
-extern uint16_t servo_rx_len ;   
-_Pragma("pack(1)") // 字节对齐，确保结构体紧凑存储
-// ==================== 坐标结构体 ====================
-typedef struct{
-  double x;
-	double y;
-	double z;
-}state_t;
+extern SemaphoreHandle_t servo_tx_sem;
+extern SemaphoreHandle_t servo_rx_sem;
+extern uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];
+extern uint8_t servo_rx_data[SERVO_RX_BUF_LEN];
+extern uint16_t servo_rx_len;
 
-typedef struct{
-  double x;
-	double y;
-	double z;
-}target_t;
+_Pragma("pack(1)")
 
 typedef struct {
-  uint8_t id;
-  uint16_t motor_tx_pos; // 关节角度值
-	uint16_t motor_rx_pos; // 接收的角度值
-  float   offset;    // 偏置校准
-  int count;     // 计数
-}motor_t;
-// ==================== 机械臂/舵机总线结构体 ====================
-typedef struct
-{
-    target_t target_pos;   // 目标坐标
-    state_t  state_pos;    // 当前状态坐标
-    uint16_t target_time;  // 运行时间(ms)
-    motor_t motor[3];    // 3个关节的舵机信息
-	int count;
+    double x;
+    double y;
+    double z;
+} state_t;
+
+typedef struct {
+    double x;
+    double y;
+    double z;
+} target_t;
+
+typedef struct {
+    uint8_t id;
+    uint16_t motor_tx_pos;
+    uint16_t motor_rx_pos;
+    float offset;
+    int count;
+} motor_t;
+
+typedef struct {
+    target_t target_pos;
+    state_t state_pos;
+    uint16_t target_time;
+    motor_t motor[3];
+    int count;
 } ServoBus_t;
 
-_Pragma("pack()") // 恢复默认对齐
+_Pragma("pack()")
 
-// ==================== 函数声明 ====================
-void ServoBus_Init(void);                                  // 初始化信号量
+void ServoBus_Init(void);
 HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd);
 HAL_StatusTypeDef ServoBus_Move_One(ServoBus_t *servo);
 HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count);
@@ -74,9 +70,10 @@ HAL_StatusTypeDef ServoBus_ReadAngle(uint8_t id);
 HAL_StatusTypeDef ServoBus_SetID(uint8_t old_id, uint8_t new_id);
 HAL_StatusTypeDef ServoBus_Unlock(uint8_t id);
 HAL_StatusTypeDef ServoBus_Lock(uint8_t id);
-void ServoBus_ParseReply();
+void ServoBus_ParseReply(void);
 void ServoBus_Start_Receive(void);
-void ServoBus_TaskReceive(void);       // 任务中等待并处理接收数据
-void ServoBus_ErrorRecovery(void);     // 任务上下文中安全的错误恢复
+void ServoBus_RequestNextAngle(void);
+void ServoBus_TaskReceive(void);
+void ServoBus_ErrorRecovery(void);
 
 #endif
