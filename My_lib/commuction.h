@@ -18,6 +18,7 @@
 #define SERVO_TIME_MIN       0
 #define SERVO_TIME_MAX       9999
 #define SERVO_RX_BUF_LEN     32
+#define SERVO_RX_TIMEOUT     30
 
 extern uint8_t g_servo_id;
 extern uint16_t g_servo_pwm;
