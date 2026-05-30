@@ -1,22 +1,12 @@
 
 
 
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:50, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/drive.c:65, State=BP_STATE_ON
 Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:101, State=BP_STATE_ON
 Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:152, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:174, State=BP_STATE_ON
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:175:1, State=BP_STATE_ON
 Breakpoint=/home/zhangjiayi/robot_arm_3d/Core/Src/freertos.c:129, State=BP_STATE_ON
 Breakpoint=/home/zhangjiayi/robot_arm_3d/Core/Src/freertos.c:130, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:17, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:24, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:28, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:42, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:49, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:54, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:56, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:150, State=BP_STATE_ON
-Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:153, State=BP_STATE_ON
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:73:1, State=BP_STATE_ON
 OpenDocument="stm32f4xx_it.c", FilePath="/home/zhangjiayi/robot_arm_3d/Core/Src/stm32f4xx_it.c", Line=71
 OpenDocument="system_stm32f4xx.c", FilePath="/home/zhangjiayi/robot_arm_3d/Core/Src/system_stm32f4xx.c", Line=158
 OpenDocument="commuction.c", FilePath="/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c", Line=133
@@ -27,14 +17,14 @@ OpenDocument="drive.c", FilePath="/home/zhangjiayi/robot_arm_3d/My_lib/drive.c",
 OpenDocument="k230.c", FilePath="/home/zhangjiayi/robot_arm_3d/My_lib/k230.c", Line=0
 OpenDocument="main.c", FilePath="/home/zhangjiayi/robot_arm_3d/Core/Src/main.c", Line=64
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=2, w=319, h=443, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Source Files", DockArea=LEFT, x=0, y=1, w=367, h=425, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=2, w=319, h=437, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=1, w=367, h=221, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=319, h=367, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Memory 1", DockArea=BOTTOM, x=1, y=0, w=1236, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x0
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=2, w=367, h=579, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=367, h=126, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=2, w=367, h=561, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=367, h=348, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=1248, h=318, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=1, w=319, h=320, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing="Task List"
+OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=1, w=319, h=326, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing="Task List"
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
 TableHeader="Functions", SortCol="Name", SortOrder="DESCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[1435;100;100;100;252]
 TableHeader="Source Files", SortCol="Status", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[239;100;100;100;735]

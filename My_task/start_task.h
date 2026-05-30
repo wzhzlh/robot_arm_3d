@@ -23,10 +23,10 @@
 extern ServoBus_t arm;
 
 /* ==================== FreeRTOS 任务函数声明 ==================== */
-void requirement(void  * argument);
+// void requirement(void  * argument);
 void mot_rece(void * argument);
-void k230_receive(void *argument);
-void requiremnet_2(void *argument);
+// void k230_receive(void *argument);
+// void requiremnet_2(void *argument);
 /* ==================== 非 static 函数声明 ==================== */
 void arm_init(void);
 void requiremnet1(void);

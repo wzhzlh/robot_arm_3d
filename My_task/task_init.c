@@ -11,12 +11,12 @@ void task_init()
 {
 	vPortEnterCritical();
 
-//	xTaskCreate(requirement,
-//        "requirement",
-//         512,
-//         NULL,
-//         4,
-//         &requirement_Handle);
+	// xTaskCreate(requirement,
+    //    "requirement",
+    //     512,
+    //     NULL,
+    //     4,
+    //     &requirement_Handle);
 	xTaskCreate(mot_rece,
          "mot_rece",
           512,  /* 增大栈空间，避免栈溢出 */
