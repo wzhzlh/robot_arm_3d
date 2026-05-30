@@ -31,6 +31,14 @@ static void ServoBus_ClearRxState(void)
     memset(servo_rx_data, 0, sizeof(servo_rx_data));
 }
 
+static void ServoBus_RestartRxDma(void)
+{
+    HAL_UART_DMAStop(&huart2);
+    ServoBus_ClearRxState();
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
+    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+}
+
 void ServoBus_Init(void)
 {
     if(servo_tx_sem == NULL)
@@ -94,9 +102,21 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
     if(huart == &huart2)
     {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        __HAL_UART_CLEAR_FLAG(huart,
+                              UART_CLEAR_OREF |
+                              UART_CLEAR_FEF |
+                              UART_CLEAR_NEF |
+                              UART_CLEAR_PEF);
+        __HAL_UART_SEND_REQ(huart, UART_RXDATA_FLUSH_REQUEST);
         servo_tx_busy = 0;
         servo_error_pending = 1;
         error_cnt++;
+        if(servo_rx_sem != NULL)
+        {
+            xSemaphoreGiveFromISR(servo_rx_sem, &xHigherPriorityTaskWoken);
+            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        }
     }
 }
 
@@ -107,9 +127,7 @@ void ServoBus_Start_Receive(void)
         ServoBus_Init();
     }
 
-    ServoBus_ClearRxState();
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
-    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+    ServoBus_RestartRxDma();
     ServoBus_RequestNextAngle();
 }
 
@@ -176,9 +194,27 @@ void ServoBus_ParseReply(void)
 
 void ServoBus_TaskReceive(void)
 {
-    if(xSemaphoreTake(servo_rx_sem, portMAX_DELAY) == pdTRUE)
+    if(xSemaphoreTake(servo_rx_sem, pdMS_TO_TICKS(SERVO_RX_TIMEOUT)) == pdTRUE)
     {
-        ServoBus_ParseReply();
+        if(servo_error_pending)
+        {
+            ServoBus_ErrorRecovery();
+        }
+        else if(servo_rx_len > 0)
+        {
+            ServoBus_ParseReply();
+        }
+    }
+    else
+    {
+        if(servo_error_pending)
+        {
+            ServoBus_ErrorRecovery();
+        }
+        else
+        {
+            ServoBus_Start_Receive();
+        }
     }
 }
 
