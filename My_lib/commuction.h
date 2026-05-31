@@ -27,6 +27,7 @@ extern volatile uint8_t servo_error_pending;
 
 extern SemaphoreHandle_t servo_tx_sem;
 extern SemaphoreHandle_t servo_rx_sem;
+extern SemaphoreHandle_t servo_rx_reply_sem;
 extern uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];
 extern uint8_t servo_rx_data[SERVO_RX_BUF_LEN];
 extern uint16_t servo_rx_len;
@@ -50,7 +51,7 @@ typedef struct {
     uint16_t motor_tx_pos;
     uint16_t motor_rx_pos;
     float offset;
-    int count;
+    // SemaphoreHandle_t tx_ready ;
 } motor_t;
 
 typedef struct {
@@ -58,22 +59,22 @@ typedef struct {
     state_t state_pos;
     uint16_t target_time;
     motor_t motor[3];
-    int count;
 } ServoBus_t;
 
 _Pragma("pack()")
 
 void ServoBus_Init(void);
 HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd);
+HAL_StatusTypeDef ServoBus_SendAndWaitReply(const char *cmd, uint32_t reply_timeout_ms);
 HAL_StatusTypeDef ServoBus_Move_One(ServoBus_t *servo);
 HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count);
+HAL_StatusTypeDef ServoBus_SendAndWaitReply(const char *cmd, uint32_t reply_timeout_ms);
 HAL_StatusTypeDef ServoBus_ReadAngle(uint8_t id);
 HAL_StatusTypeDef ServoBus_SetID(uint8_t old_id, uint8_t new_id);
 HAL_StatusTypeDef ServoBus_Unlock(uint8_t id);
 HAL_StatusTypeDef ServoBus_Lock(uint8_t id);
 void ServoBus_ParseReply(void);
 void ServoBus_Start_Receive(void);
-void ServoBus_RequestNextAngle(void);
 void ServoBus_TaskReceive(void);
 void ServoBus_ErrorRecovery(void);
 

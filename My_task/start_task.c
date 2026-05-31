@@ -68,31 +68,45 @@ void requirement(void *argument)
     requirement4();
     requirement5();
 }
-
+int cnt;
 void mot_rece(void *argument)
 {
     /* 初始化舵机串口DMA接收 */
     ServoBus_Start_Receive();
 
-    const TickType_t xFrequency = pdMS_TO_TICKS(100);
-    TickType_t xLastWakeTime = xTaskGetTickCount();
-
-    for(;;)
-    {
-        /* 等待下一个周期（100ms） */
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
-
-        /* 在任务上下文中等待并处理舵机反馈 */
-        ServoBus_TaskReceive();
-
-        /* 帧解析完成，g_servo_reply_ok、g_servo_pwm 等已更新 */
-        if(g_servo_reply_ok)
+        /* 同步"一问一答"：轮询读取3个舵机的当前位置
+         * ServoBus_ReadAngle 内部流程：
+         *   1. 清空残留 servo_rx_reply_sem
+         *   2. 发送读取指令 → 阻塞等待"发送完毕"(servo_tx_sem)
+         *   3. 阻塞等待"接收完毕"(servo_rx_reply_sem)
+         *   4. 解析回复，更新 g_servo_id/g_servo_pwm/g_servo_reply_ok
+         */
+  TickType_t last_wake_time = xTaskGetTickCount();
+       while(1)
         {
-            /* 可在此添加闭环控制等逻辑 */
-            g_servo_reply_ok = 0;  /* 清除标志 */
+
+            HAL_StatusTypeDef ret0 = ServoBus_ReadAngle(0);
+				  	HAL_StatusTypeDef ret1 = ServoBus_ReadAngle(1);
+					  HAL_StatusTypeDef ret2 = ServoBus_ReadAngle(2);
+            if(ret0 == HAL_OK && ret1 == HAL_OK && ret2 == HAL_OK && g_servo_reply_ok)
+            {
+                /* 帧解析完成，g_servo_pwm 已更新，arm.motor[id-1].motor_rx_pos 已写入 */
+                /* 可在此添加闭环控制等逻辑 */
+                g_servo_reply_ok = 0;  /* 清除标志 */
+            }
+            else 
+            {
+                /* 超时或错误：恢复接收并跳过当前舵机 */
+                ServoBus_ErrorRecovery();
+            }
+             vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(300));
+						
         }
-    } 
-}
+
+        /* 一轮读取完成后短暂休眠，避免过度占用总线 */
+        
+    }
+
 
 void k230_receive(void *argument)
 {

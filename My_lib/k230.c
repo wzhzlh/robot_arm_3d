@@ -109,13 +109,19 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
         }
         // 2. 拷贝数据到解析缓冲区
         memcpy(servo_rx_data, servo_rx_buf, servo_rx_len);
-        // 3. 重启DMA接收（仅重启DMA，不发送指令）
+        // 3. 在 ISR 中立即解析回复帧
+        ServoBus_ParseReply();
+        // 4. 重启DMA接收（仅重启DMA，不发送指令）
         HAL_UART_DMAStop(&huart2);
         HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
         __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
-        // 4. 通过二值信号量通知mot_rece任务解析处理
+        // 5. 通知所有等待的任务
+        //    servo_rx_sem       → ServoBus_TaskReceive (轮询模式)
+        //    servo_rx_reply_sem → ServoBus_SendAndWaitReply (同步一问一答)
         xSemaphoreGiveFromISR(servo_rx_sem, &xHigherPriorityTaskWoken);
+        xSemaphoreGiveFromISR(servo_rx_reply_sem, &xHigherPriorityTaskWoken);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	
     }
    // 只处理K230对应的UART3
    if(huart == &huart3)
