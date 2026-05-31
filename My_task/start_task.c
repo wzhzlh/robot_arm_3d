@@ -74,8 +74,14 @@ void mot_rece(void *argument)
     /* 初始化舵机串口DMA接收 */
     ServoBus_Start_Receive();
 
+    const TickType_t xFrequency = pdMS_TO_TICKS(100);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+
     for(;;)
     {
+        /* 等待下一个周期（100ms） */
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+
         /* 在任务上下文中等待并处理舵机反馈 */
         ServoBus_TaskReceive();
 
@@ -85,7 +91,7 @@ void mot_rece(void *argument)
             /* 可在此添加闭环控制等逻辑 */
             g_servo_reply_ok = 0;  /* 清除标志 */
         }
-    }
+    } 
 }
 
 void k230_receive(void *argument)

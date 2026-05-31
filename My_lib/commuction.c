@@ -103,12 +103,12 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     if(huart == &huart2)
     {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        __HAL_UART_CLEAR_FLAG(huart,
-                              UART_CLEAR_OREF |
-                              UART_CLEAR_FEF |
-                              UART_CLEAR_NEF |
-                              UART_CLEAR_PEF);
-        __HAL_UART_SEND_REQ(huart, UART_RXDATA_FLUSH_REQUEST);
+        /* STM32F4: 通过读SR再读DR清除所有错误标志(PE/FE/NE/ORE) */
+        {
+            volatile uint32_t tmp = huart->Instance->SR;
+            tmp = huart->Instance->DR;
+            (void)tmp;
+        }
         servo_tx_busy = 0;
         servo_error_pending = 1;
         error_cnt++;
@@ -235,10 +235,12 @@ HAL_StatusTypeDef ServoBus_Move_One(ServoBus_t *servo)
         pos = SERVO_POS_MAX;
     }
 
+#if SERVO_TIME_MIN > 0
     if(servo->target_time < SERVO_TIME_MIN)
     {
         servo->target_time = SERVO_TIME_MIN;
     }
+#endif
     if(servo->target_time > SERVO_TIME_MAX)
     {
         servo->target_time = SERVO_TIME_MAX;
@@ -272,10 +274,12 @@ HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count)
         }
 
         uint16_t time = servos->target_time;
+#if SERVO_TIME_MIN > 0
         if(time < SERVO_TIME_MIN)
         {
             time = SERVO_TIME_MIN;
         }
+#endif
         if(time > SERVO_TIME_MAX)
         {
             time = SERVO_TIME_MAX;
