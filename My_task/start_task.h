@@ -29,9 +29,9 @@ void mot_rece(void * argument);
 // void requiremnet_2(void *argument);
 /* ==================== 非 static 函数声明 ==================== */
 void arm_init(void);
-void requiremnet1(void);
-void requiremnet2(void);
-void requiremnet3(void);
+void requirement1(void);
+void requirement2(void);
+void requirement3(void);
 void requirement3(void);
 void requirement4(void);
 void requirement5(void);

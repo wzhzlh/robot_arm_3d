@@ -62,13 +62,14 @@ static void line_interp(float x0, float y0, float z0,
 
 void requirement(void *argument)
 {
-    requiremnet1();
-    requiremnet2();
+    requirement1();
+    requirement2();
     requirement3();
     requirement4();
     requirement5();
 }
-int cnt;
+ HAL_StatusTypeDef ret[3];
+
 void mot_rece(void *argument)
 {
     /* 初始化舵机串口DMA接收 */
@@ -84,11 +85,10 @@ void mot_rece(void *argument)
   TickType_t last_wake_time = xTaskGetTickCount();
        while(1)
         {
-
-            HAL_StatusTypeDef ret0 = ServoBus_ReadAngle(0);
-				  	HAL_StatusTypeDef ret1 = ServoBus_ReadAngle(1);
-					  HAL_StatusTypeDef ret2 = ServoBus_ReadAngle(2);
-            if(ret0 == HAL_OK && ret1 == HAL_OK && ret2 == HAL_OK && g_servo_reply_ok)
+            ret[0] = ServoBus_ReadAngle(0);
+            ret[1] = ServoBus_ReadAngle(1);
+            ret[2] = ServoBus_ReadAngle(2);
+            if(ret[0] == HAL_OK && ret[1] == HAL_OK && ret[2] == HAL_OK && g_servo_reply_ok)
             {
                 /* 帧解析完成，g_servo_pwm 已更新，arm.motor[id-1].motor_rx_pos 已写入 */
                 /* 可在此添加闭环控制等逻辑 */
@@ -170,7 +170,7 @@ void requirement_2(void *argument)
 
 /* ==================== requiremnet 函数 ==================== */
 
-void requiremnet1(void)
+void requirement1(void)
 {
     /* 等待系统稳定 */
     arm_init();
@@ -212,7 +212,7 @@ void requiremnet1(void)
     // vTaskDelete(NULL);
 }
 
-void requiremnet2(void)
+void requirement2(void)
 {
     /* ---- 初始化舵机参数 ---- */
     arm_init();
@@ -234,7 +234,7 @@ void requiremnet2(void)
     }
 }
 
-void requiremnet3(void)
+void requirement3(void)
 {
     // /* 等待start_task完成基本动作演示 */
     // osDelay(25000);
@@ -279,11 +279,7 @@ void requiremnet3(void)
     //     osDelay(10);
     // }
 }
-
-void requirement3(void)
-{
-
-}
+ 
 void requirement4(void)
 {
 
