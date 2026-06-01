@@ -252,21 +252,19 @@ HAL_StatusTypeDef ServoBus_SendAndWaitReply(const char *cmd, uint32_t reply_time
 {
     /* ① 清残留：非阻塞 Take，确保拿到的是本次回复的信号量 */
     xSemaphoreTake(servo_rx_reply_sem, 0);
-
     /* ② 发送：内部阻塞等待 servo_tx_sem (标记 "发送完毕") */
-    HAL_StatusTypeDef status = ServoBus_SendCmd(cmd);
-    if(status != HAL_OK)
+    HAL_StatusTypeDef status ;
+    /* ③ 接收：阻塞等待 servo_rx_reply_sem (标记 "接收完毕")
+     *    回复已在 ISR 中由 ServoBus_ParseReply 解析完毕 */
+    if(xSemaphoreTake(servo_rx_reply_sem, pdMS_TO_TICKS(reply_timeout_ms)) == pdTRUE)
+    {
+         status = ServoBus_SendCmd(cmd);
+            return HAL_OK;
+    }
+        if(status != HAL_OK)
     {
         return status;
     }
-
-    /* ③ 接收：阻塞等待 servo_rx_reply_sem (标记 "接收完毕")
-     *    回复已在 ISR 中由 ServoBus_ParseReply 解析完毕 */
-    if(xSemaphoreTake(servo_rx_reply_sem, pdMS_TO_TICKS(reply_timeout_ms)) != pdTRUE)
-    {
-        return HAL_TIMEOUT;
-    }
-    return g_servo_reply_ok ? HAL_OK : HAL_ERROR;
 }
 
 void ServoBus_TaskReceive(void)
