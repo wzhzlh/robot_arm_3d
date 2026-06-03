@@ -2,37 +2,8 @@
 #include "start_task.h"
 #include "task.h"
 
-/* ---------------------------------------------------------------
- * start_task : 基本要求(1)
- *   上电后依次完成三个基本动作演示：
- *   Step1 - joint1 水平旋转  0 -> 270 -> 0
- *   Step2 - joint2 竖直旋转  0 -> 180 -> 0
- *   Step3 - joint3 末端旋转  0 -> 180 -> 0
- *   每步运动时间 2000 ms，到位后停留 500 ms
- * --------------------------------------------------------------- */
-
-/* 舵机数组：3个关节，ID分别为1/2/3 */
 ServoBus_t arm;
-
-/* ---------------------------------------------------------------
- * arm_control_task : 基本要求(3) - 视觉识别定位红色目标物
- * 基本要求(4) - 移动到识别到的目标位置
- *   通过K230视觉识别模块获取红色目标物坐标，控制机械臂移动到目标位置
- *   使用直线插补方式平滑移动到目标
- * --------------------------------------------------------------- */
-
-/* 状态枚举 */
-typedef enum {
-    ARM_IDLE = 0,
-    ARM_MOVE_TO_TARGET,     // 移动到目标位置
-    ARM_ARRIVED,           // 已到达目标位置
-    ARM_RETURN_HOME        // 返回原点
-} ArmStateTypeDef;
-
-/* 目标高度 (单位: 米) */
-#define TARGET_Z  0.10f  // 移动到目标时的高度
-
-static ArmStateTypeDef arm_state = ARM_IDLE;
+ArmStateTypeDef arm_state = ARM_IDLE;
 
 typedef struct {
     float k;
@@ -46,7 +17,7 @@ typedef struct {
     uint32_t total_time_ms;
 } LinearTrajectory3D;
 
-/* ==================== 函数声明 ==================== */
+
 static void set_angles(float th1, float th2, float th3, uint16_t move_time);
 static void move_to(float x, float y, float z, uint16_t move_time);
 static float linear_traj_eval(const LinearAxisTrajectory *axis, float time_ms);
@@ -58,7 +29,7 @@ static void line_interp(float x0, float y0, float z0,
                         float x1, float y1, float z1,
                         uint8_t steps, uint16_t step_time);
 
-/* ==================== FreeRTOS 任务函数 ==================== */
+
 
 void requirement(void *argument)
 {
@@ -68,55 +39,34 @@ void requirement(void *argument)
     requirement4();
     requirement5();
 }
- HAL_StatusTypeDef ret[3];
 
-void mot_rece(void *argument)
-{
-    /* 初始化舵机串口DMA接收 */
-    ServoBus_Start_Receive();
+//  HAL_StatusTypeDef ret[3];
 
-        /* 同步"一问一答"：轮询读取3个舵机的当前位置
-         * ServoBus_ReadAngle 内部流程：
-         *   1. 清空残留 servo_rx_reply_sem
-         *   2. 发送读取指令 → 阻塞等待"发送完毕"(servo_tx_sem)
-         *   3. 阻塞等待"接收完毕"(servo_rx_reply_sem)
-         *   4. 解析回复，更新 g_servo_id/g_servo_pwm/g_servo_reply_ok
-         */
-  TickType_t last_wake_time = xTaskGetTickCount();
-       while(1)
-        {
-            ret[0] = ServoBus_ReadAngle(0);
-            ret[1] = ServoBus_ReadAngle(1);
-            ret[2] = ServoBus_ReadAngle(2);
-            if(ret[0] == HAL_OK && ret[1] == HAL_OK && ret[2] == HAL_OK && g_servo_reply_ok)
-            {
-                /* 帧解析完成，g_servo_pwm 已更新，arm.motor[id-1].motor_rx_pos 已写入 */
-                /* 可在此添加闭环控制等逻辑 */
-                g_servo_reply_ok = 0;  /* 清除标志 */
-            }
-            else 
-            {
-                /* 超时或错误：恢复接收并跳过当前舵机 */
-                ServoBus_ErrorRecovery();
-            }
-             vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(300));
-						
-        }
+// void mot_rece(void *argument)
+// {
+//     arm_init();
+//     ServoBus_Start_Receive();
 
-        /* 一轮读取完成后短暂休眠，避免过度占用总线 */
-        
-    }
+//     TickType_t last_wake_time = xTaskGetTickCount();
+//     while(1)
+//     {
+//         ret[0] = ServoBus_ReadAngle(1);
+//         ret[1] = ServoBus_ReadAngle(2);
+//         ret[2] = ServoBus_ReadAngle(3);
+
+//         if(ret[0] != HAL_OK || ret[1] != HAL_OK || ret[2] != HAL_OK)
+//         {
+//             ServoBus_ErrorRecovery();
+//         }
+//         else
+//         {
+//             g_servo_reply_ok = 0;
+//         }
+//         vTaskDelayUntil(&last_wake_time, pdMS_TO_TICKS(300));
+//     }
+// }
 
 
-void k230_receive(void *argument)
-{
-
-}
-
-/* ---------------------------------------------------------------
- * comm_task : 通信任务
- *   处理串口通信，包括舵机反馈和K230视觉数据
- * --------------------------------------------------------------- */
 void requirement_2(void *argument)
 {
     // /* 启动舵机串口接收 */
@@ -168,128 +118,83 @@ void requirement_2(void *argument)
 }
 
 
-/* ==================== requiremnet 函数 ==================== */
 
 void requirement1(void)
 {
-    /* 等待系统稳定 */
+
     arm_init();
     vTaskDelay(500);
 
-    TickType_t xLastWakeTime = xTaskGetTickCount();
-    // /* ---- 归零：所有关节回到 0 度 ---- */
     set_angles(0.0f, 0.0f, 0.0f, 1000);
     vTaskDelay(1000);
 
-    /* ====================================================
-     * Step 1：joint1 水平旋转  0 -> 270 -> 0
-     * ==================================================== */
     set_angles(270.0f, 0.0f, 0.0f, 2000);
     vTaskDelay(1500);
     ServoBus_ReadAngle(1);
     set_angles(0.0f, 0.0f, 0.0f, 2000);
     vTaskDelay(1500);
 
-    /* ====================================================
-     * Step 2：joint2 竖直旋转  0 -> 180 -> 0
-     * ==================================================== */
     set_angles(0.0f, 180.0f, 0.0f, 2000);
     vTaskDelay(2500);
 
     set_angles(0.0f, 0.0f, 0.0f, 2000);
     vTaskDelay(2500);
 
-    /* ====================================================
-     * Step 3：joint3 末端旋转  0 -> 180 -> 0
-     * ==================================================== */
     set_angles(0.0f, 0.0f, -90.0f, 2000);
     vTaskDelay(1500);
     set_angles(0.0f, 0.0f, 90.0f, 2000);
     vTaskDelay(1500);
+    
     set_angles(0.0f, 0.0f, 0.0f, 2000);
     vTaskDelay(1500);
-    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(6000));
     // vTaskDelete(NULL);
 }
 
 void requirement2(void)
 {
-    /* ---- 初始化舵机参数 ---- */
     arm_init();
+    K230_UART_Init();
+
+    float last_x = 0.0f, last_y = 0.0f, last_z = 0.0f;
+    uint8_t steps = 5;
+    uint16_t step_ms = 200;
 
     for(;;)
     {
-        line_interp(0.05f, 0.05f, 0.15f,
-                    -0.05f, 0.05f, 0.15f,
-                    INTERP_STEPS, INTERP_STEP_MS);
-        line_interp(-0.05f, 0.05f, 0.15f,
-                    -0.05f, 0.05f, 0.05f,
-                    INTERP_STEPS, INTERP_STEP_MS);
-        line_interp(-0.05f, 0.05f, 0.05f,
-                    0.05f, 0.05f, 0.05f,
-                    INTERP_STEPS, INTERP_STEP_MS);
-        line_interp(0.05f, 0.05f, 0.05f,
-                    0.05f, 0.05f, 0.15f,
-                    INTERP_STEPS, INTERP_STEP_MS);
+        if(k230_comm_status == K230_RECEIVED_OK)
+        {
+            k230_comm_status = K230_IDLE;
+            arm.target_pos.x = (float)k230_target_pos.x;
+            arm.target_pos.y = (float)k230_target_pos.y;
+            arm.target_pos.z = (float)k230_target_pos.z;
+            line_interp(last_x, last_y, last_z,
+                        arm.target_pos.x, arm.target_pos.y, arm.target_pos.z,
+                        steps, step_ms);
+            last_x = arm.target_pos.x;
+            last_y = arm.target_pos.y;
+            last_z = arm.target_pos.z;
+        }
     }
-}
+} 
 
 void requirement3(void)
 {
-    // /* 等待start_task完成基本动作演示 */
-    // osDelay(25000);
-    
-    // /* 初始化K230视觉通信 */
-    // K230_UART_Init();
-    
-    // for(;;)
-    // {
-    //     /* 检查是否有新的视觉目标数据 */
-    //     if(k230_comm_status == K230_RECEIVED_OK && arm_state == ARM_IDLE)
-    //     {
-    //         /* 获取K230识别到的目标坐标 */
-    //         float target_x = (float)k230_target_pos.x;
-    //         float target_y = (float)k230_target_pos.y;
-    //         float target_z = (float)k230_target_pos.z;
-            
-    //         /* 重置通信状态 */
-    //         k230_comm_status = K230_IDLE;
-            
-    //         /* 开始移动到目标位置 */
-    //         arm_state = ARM_MOVE_TO_TARGET;
-            
-    //         /* 移动到识别到的目标位置 */
-    //         move_to(target_x, target_y, TARGET_Z, 2000);
-    //         osDelay(2500);
-            
-    //         /* 到达目标位置 */
-    //         arm_state = ARM_ARRIVED;
-            
-    //         /* 在目标位置停留一段时间 */
-    //         osDelay(1000);
-            
-    //         // /* 返回原点 */
-    //         //  move_to(0.15f, 0.0f, 0.15f, 2000);
-    //         // osDelay(2500);
-            
-    //         /* 状态重置 */
-    //         arm_state = ARM_IDLE;
-    //     }
-        
-    //     osDelay(10);
-    // }
+    K230_UART_Init();
+    for(;;)
+    {
+        if(k230_comm_status == K230_RECEIVED_OK && arm_state == ARM_IDLE)
+        {
+            arm.target_pos.x = (float)k230_target_pos.x;
+            arm.target_pos.y = (float)k230_target_pos.y;
+            arm.target_pos.z = (float)k230_target_pos.z;
+            k230_comm_status = K230_IDLE;
+            arm_state = ARM_MOVE_TO_TARGET;
+            move_to(arm.target_pos.x, arm.target_pos.y, arm.target_pos.z, 2000);
+            arm_state = ARM_ARRIVED;
+            arm_state = ARM_IDLE;
+        }
+    }
 }
- 
-void requirement4(void)
-{
-
-}
-void requirement5(void)
-{
-
-}
-
-/* ==================== 辅助函数 ==================== */
 
 void arm_init(void)
 {
@@ -354,10 +259,6 @@ static void update_linear_trajectory(LinearTrajectory3D *traj,
     traj->lz.b = z0;
 }
 
-/* ---------------------------------------------------------------
- * 直线轨迹：先建立 x(t)=kx*t+b, y(t)=ky*t+b, z(t)=kz*t+b
- *   再按 step_time 周期采样执行，保证末端按笛卡尔直线运动
- * --------------------------------------------------------------- */
 static void line_interp(float x0, float y0, float z0,
                         float x1, float y1, float z1,
                         uint8_t steps, uint16_t step_time)
@@ -393,8 +294,6 @@ static void line_interp(float x0, float y0, float z0,
         z = linear_traj_eval(&traj.lz, sample_time_ms);
 
         move_to(x, y, z, move_time_ms);
-        // osDelay(move_time_ms + 20u);
-
         elapsed_ms = next_elapsed_ms;
     }
 }
