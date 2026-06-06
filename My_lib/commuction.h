@@ -29,12 +29,6 @@ typedef struct {
     double x;
     double y;
     double z;
-} state_t;
-
-typedef struct {
-    double x;
-    double y;
-    double z;
 } target_t;
 
 typedef struct {
@@ -46,7 +40,6 @@ typedef struct {
 
 typedef struct {
     target_t target_pos;
-    state_t state_pos;
     uint16_t target_time;
     motor_t motor[3];
 } ServoBus_t;

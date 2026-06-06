@@ -3,8 +3,8 @@
 #include "FreeRTOS.h"
 #include <string.h>
 
-static uint8_t k230_rx_buf[32];
-static uint8_t k230_parse_buf[32];
+static K230_TargetPosTypeDef k230_rx_buf;
+static K230_TargetPosTypeDef k230_parse_buf;
 static uint16_t k230_rx_len = 0;
 
 K230_TargetPosTypeDef k230_target_pos = {0};
@@ -21,7 +21,7 @@ void K230_UART_Init(void)
 }
 
 
-void K230_ParseFrame(uint8_t *buf, uint16_t len)
+void K230_ParseFrame(K230_TargetPosTypeDef *buf, uint16_t len)
 {
     if(len < 8u)
     {
@@ -76,13 +76,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
     if(huart == &huart3)
     {
         k230_rx_len = size;
-        if(k230_rx_len > 32)
-        {
-            k230_rx_len = 32;
-        }
-
-        memcpy(k230_parse_buf, k230_rx_buf, k230_rx_len);
-        K230_ParseFrame(k230_parse_buf, k230_rx_len);
+        memcpy(&k230_parse_buf[0], &k230_rx_buf, sizeof(K230_TargetPosTypeDef));
+        K230_ParseFrame((uint8_t *)&k230_parse_buf[0], k230_rx_len);
         K230_UART_Init();
     }
 }

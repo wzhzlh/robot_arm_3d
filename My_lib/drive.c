@@ -33,7 +33,7 @@ void IK_2D(ServoBus_t *robot_arm)
     float cos_beta = (A * A + d * d - B * B) / (2.0f * A * d);
     cos_beta = clamp(cos_beta, -1.0f, 1.0f);
     float beta = acosf(cos_beta);
-    float theta2 = phi + beta;
+    float theta2 = phi + beta; 
 
     robot_arm->motor[1].motor_tx_pos = theta2 * rad_to_angle;
     robot_arm->motor[2].motor_tx_pos = theta3 * rad_to_angle;
@@ -45,21 +45,19 @@ void IK_3D(ServoBus_t *robot_arm)
     float y = robot_arm->target_pos.y;
     float theta1_target_deg = atan2f(y, x) * rad_to_angle;
     robot_arm->motor[0].motor_tx_pos = theta1_target_deg;
-
     IK_2D(robot_arm);
 }
 
 target_t FK_3D(ServoBus_t *robot_arm)
 {
     target_t pos;
-    float th1 = robot_arm->motor[0].motor_tx_pos / rad_to_angle;
-    float th2 = robot_arm->motor[1].motor_tx_pos / rad_to_angle;
-    float th3 = robot_arm->motor[2].motor_tx_pos / rad_to_angle;
+    float th1 = robot_arm->motor[0].motor_rx_pos / rad_to_angle;
+    float th2 = robot_arm->motor[1].motor_rx_pos / rad_to_angle;
+    float th3 = robot_arm->motor[2].motor_rx_pos / rad_to_angle;
 
     float z = L2 * cosf(th2) + L3 * cosf(th2 + th3);
     float r = L2 * sinf(th2) + L3 * sinf(th2 + th3);
     z += L1;
-
     pos.x = r * cosf(th1);
     pos.y = r * sinf(th1);
     pos.z = z;

@@ -24,6 +24,6 @@ extern K230_TargetPosTypeDef k230_target_pos;
 extern K230_StatusTypeDef k230_comm_status;
 
 void K230_UART_Init(void);
-void K230_ParseFrame(uint8_t *buf, uint16_t len);
+void K230_ParseFrame(K230_TargetPosTypeDef *buf, uint16_t len);
 
 #endif

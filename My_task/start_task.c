@@ -5,6 +5,7 @@
 ServoBus_t arm;
 ArmStateTypeDef arm_state = ARM_IDLE;
 
+float key=0;
 typedef struct {
     float k;
     float b;
@@ -33,11 +34,21 @@ static void line_interp(float x0, float y0, float z0,
 
 void requirement(void *argument)
 {
-    requirement1();
-    requirement2();
-    requirement3();
-    requirement4();
-    requirement5();
+    while(1)
+    {
+    key = ADC_GetValue();
+        if(key>0.0 && key<0.2){
+            requirement_1();
+        }
+        if(key>0.3 && key<0.6)
+        {
+            requirement_2();
+        }
+        if(key>0.7 && key<1.0)
+        {
+            requirement_3();
+        }
+    }
 }
 
 //  HAL_StatusTypeDef ret[3];
@@ -67,59 +78,7 @@ void requirement(void *argument)
 // }
 
 
-void requirement_2(void *argument)
-{
-    // /* 启动舵机串口接收 */
-    // ServoBus_Start_Receive();
-    
-    // float error_threshold = 2.0f;  // 角度误差阈值
-    
-    // for(;;)
-    // {
-    //     /* 处理舵机反馈数据 */
-    //     if(g_servo_reply_ok)
-    //     {
-    //         /* 解析舵机返回的角度数据 */
-    //         float angle = (g_servo_pwm - 500) / 7.407f;
-            
-    //         /* 根据舵机ID存储实际角度并进行闭环控制 */
-    //         if(g_servo_id >= 1 && g_servo_id <= 3)
-    //         {
-    //             /* 计算当前角度误差 */
-    //             float expected_angle = 0.0f;
-    //             if(g_servo_id == 1) expected_angle = arm.motor[0].motor_tx_pos;
-    //             else if(g_servo_id == 2) expected_angle = arm.motor[1].motor_tx_pos;
-    //             else if(g_servo_id == 3) expected_angle = arm.motor[2].motor_tx_pos;
-                
-    //             float error = expected_angle - angle;
-                
-    //             /* 如果当前实际角度与期望角度差异过大，进行补偿 */
-    //             if(fabsf(error) > error_threshold)
-    //             {
-    //                 /* 这里可以实现简单的比例补偿算法 */
-    //                 float new_target_angle = angle + error * 0.8f;  // 80%的误差补偿
-                    
-    //                 /* 根据ID设置新的目标角度 */
-    //                 float th1 = arm.motor[0].motor_tx_pos, th2 = arm.motor[1].motor_tx_pos, th3 = arm.motor[2].motor_tx_pos;
-    //                 if(g_servo_id == 1) th1 = new_target_angle;
-    //                 else if(g_servo_id == 2) th2 = new_target_angle;
-    //                 else if(g_servo_id == 3) th3 = new_target_angle;
-                    
-    //                 /* 发送修正后的角度命令 */
-    //                 set_angles(th1, th2, th3, 500);
-    //             }
-    //         }
-            
-    //         g_servo_reply_ok = 0;  // 清除标志
-    //     }
-        
-    //     osDelay(50);
-    // }
-}
-
-
-
-void requirement1(void)
+void requirement_1(void)
 {
 
     arm_init();
@@ -150,7 +109,7 @@ void requirement1(void)
     // vTaskDelete(NULL);
 }
 
-void requirement2(void)
+void requirement_2(void)
 {
     arm_init();
     K230_UART_Init();
@@ -164,9 +123,9 @@ void requirement2(void)
         if(k230_comm_status == K230_RECEIVED_OK)
         {
             k230_comm_status = K230_IDLE;
-            arm.target_pos.x = (float)k230_target_pos.x;
-            arm.target_pos.y = (float)k230_target_pos.y;
-            arm.target_pos.z = (float)k230_target_pos.z;
+            arm.target_pos.x = (float)k230_parse_buf.x;
+            arm.target_pos.y = (float)k230_parse_buf.y;
+            arm.target_pos.z = (float)k230_parse_buf.z;
             line_interp(last_x, last_y, last_z,
                         arm.target_pos.x, arm.target_pos.y, arm.target_pos.z,
                         steps, step_ms);
@@ -177,16 +136,16 @@ void requirement2(void)
     }
 } 
 
-void requirement3(void)
+void requirement_3(void)
 {
     K230_UART_Init();
     for(;;)
     {
         if(k230_comm_status == K230_RECEIVED_OK && arm_state == ARM_IDLE)
         {
-            arm.target_pos.x = (float)k230_target_pos.x;
-            arm.target_pos.y = (float)k230_target_pos.y;
-            arm.target_pos.z = (float)k230_target_pos.z;
+            arm.target_pos.x = (float)k230_parse_buf.x;
+            arm.target_pos.y = (float)k230_parse_buf.y;
+            arm.target_pos.z = (float)k230_parse_buf.z;
             k230_comm_status = K230_IDLE;
             arm_state = ARM_MOVE_TO_TARGET;
             move_to(arm.target_pos.x, arm.target_pos.y, arm.target_pos.z, 2000);
@@ -296,4 +255,15 @@ static void line_interp(float x0, float y0, float z0,
         move_to(x, y, z, move_time_ms);
         elapsed_ms = next_elapsed_ms;
     }
+}
+float ADC_GetValue(void)
+{
+    HAL_ADC_Start(&hadc1);
+
+    HAL_ADC_PollForConversion(&hadc1, 10);
+
+    float value = HAL_ADC_GetValue(&hadc1);
+    float voltage = (float)(value / 4095.0f); // 12位ADC
+    HAL_ADC_Stop(&hadc1);
+    return voltage;
 }
