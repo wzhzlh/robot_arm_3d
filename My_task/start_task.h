@@ -22,5 +22,7 @@ void arm_init(void);
 void requirement_1(void);
 void requirement_2(void);
 void requirement_3(void);
+float ADC_GetValue(void);
+
 
 #endif

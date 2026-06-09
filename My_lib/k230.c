@@ -3,10 +3,11 @@
 #include "FreeRTOS.h"
 #include <string.h>
 
-static K230_TargetPosTypeDef k230_rx_buf;
-static K230_TargetPosTypeDef k230_parse_buf;
+
 static uint16_t k230_rx_len = 0;
 
+K230_TargetPosTypeDef k230_rx_buf = {0};
+K230_TargetPosTypeDef k230_parse_buf = {0};
 K230_TargetPosTypeDef k230_target_pos = {0};
 K230_StatusTypeDef k230_comm_status = K230_IDLE;
 
@@ -14,40 +15,24 @@ void K230_UART_Init(void)
 {
     HAL_UART_AbortReceive(&huart3);
 
-    HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart3, k230_rx_buf, 32);
+    HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart3, (uint8_t *)&k230_rx_buf, sizeof(K230_TargetPosTypeDef));
     (void)status;
 
     __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);
 }
 
-
 void K230_ParseFrame(K230_TargetPosTypeDef *buf, uint16_t len)
 {
-    if(len < 8u)
+    if(buf->a == 1)
+    {
+    if(len < sizeof(K230_TargetPosTypeDef))
     {
         k230_comm_status = K230_RECEIVE_ERROR;
         return;
     }
-
-    if(buf[0] != 0xAA || buf[len - 1u] != 0x55)
-    {
-        k230_comm_status = K230_RECEIVE_ERROR;
-        return;
-    }
-
-    uint16_t received_crc = (uint16_t)((buf[len - 3u] << 8) | buf[len - 2u]);
-    uint16_t calculated_crc = crc_ccitt(0, buf, len - 3u);
-
-    if(received_crc != calculated_crc)
-    {
-        k230_comm_status = K230_RECEIVE_ERROR;
-        return;
-    }
-    else
-    {
-        k230_target_pos.x = buf[2];
-        k230_target_pos.y = buf[3];
-        k230_target_pos.z = buf[4];
+        k230_target_pos.x = buf->x;
+        k230_target_pos.y = buf->y;
+        k230_target_pos.z = buf->z;
         k230_comm_status = K230_RECEIVED_OK;
     }
 }
@@ -76,8 +61,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
     if(huart == &huart3)
     {
         k230_rx_len = size;
-        memcpy(&k230_parse_buf[0], &k230_rx_buf, sizeof(K230_TargetPosTypeDef));
-        K230_ParseFrame((uint8_t *)&k230_parse_buf[0], k230_rx_len);
+        memcpy(&k230_parse_buf, &k230_rx_buf, sizeof(K230_TargetPosTypeDef));
+        K230_ParseFrame(&k230_parse_buf, k230_rx_len);
         K230_UART_Init();
     }
 }

@@ -15,10 +15,14 @@ typedef enum {
 } K230_StatusTypeDef;
 
 typedef struct {
+    int a;
     uint8_t x;
     uint8_t y;
     uint8_t z;
 } K230_TargetPosTypeDef;
+
+extern  K230_TargetPosTypeDef k230_rx_buf;
+extern K230_TargetPosTypeDef k230_parse_buf;
 
 extern K230_TargetPosTypeDef k230_target_pos;
 extern K230_StatusTypeDef k230_comm_status;

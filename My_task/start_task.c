@@ -123,9 +123,9 @@ void requirement_2(void)
         if(k230_comm_status == K230_RECEIVED_OK)
         {
             k230_comm_status = K230_IDLE;
-            arm.target_pos.x = (float)k230_parse_buf.x;
-            arm.target_pos.y = (float)k230_parse_buf.y;
-            arm.target_pos.z = (float)k230_parse_buf.z;
+            arm.target_pos.x = (float)k230_target_pos.x;
+            arm.target_pos.y = (float)k230_target_pos.y;
+            arm.target_pos.z = (float)k230_target_pos.z;
             line_interp(last_x, last_y, last_z,
                         arm.target_pos.x, arm.target_pos.y, arm.target_pos.z,
                         steps, step_ms);
@@ -143,9 +143,9 @@ void requirement_3(void)
     {
         if(k230_comm_status == K230_RECEIVED_OK && arm_state == ARM_IDLE)
         {
-            arm.target_pos.x = (float)k230_parse_buf.x;
-            arm.target_pos.y = (float)k230_parse_buf.y;
-            arm.target_pos.z = (float)k230_parse_buf.z;
+            arm.target_pos.x = (float)k230_target_pos.x;
+            arm.target_pos.y = (float)k230_target_pos.y;
+            arm.target_pos.z = (float)k230_target_pos.z;
             k230_comm_status = K230_IDLE;
             arm_state = ARM_MOVE_TO_TARGET;
             move_to(arm.target_pos.x, arm.target_pos.y, arm.target_pos.z, 2000);
@@ -260,7 +260,7 @@ float ADC_GetValue(void)
 {
     HAL_ADC_Start(&hadc1);
 
-    HAL_ADC_PollForConversion(&hadc1, 10);
+    HAL_ADC_PollForConversion(&hadc1, 100);
 
     float value = HAL_ADC_GetValue(&hadc1);
     float voltage = (float)(value / 4095.0f); // 12位ADC
