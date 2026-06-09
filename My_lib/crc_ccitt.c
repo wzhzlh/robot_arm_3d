@@ -1,12 +1,6 @@
 #include "crc_ccitt.h"
 
-/*
- * This mysterious table is just the CRC of each possible byte. It can be
- * computed using the standard bit-at-a-time methods. The polynomial can
- * be seen in entry 128, 0x8408. This corresponds to x^0 + x^5 + x^12.
- * Add the implicit x^16, and you have the standard CRC-CCITT.
- * https://github.com/torvalds/linux/blob/5bfc75d92efd494db37f5c4c173d3639d4772966/lib/crc-ccitt.c
- */
+/* CRC-CCITT lookup table. */
 const uint16_t crc_ccitt_table[256] = {
 	0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
 	0x8c48, 0x9dc1, 0xaf5a, 0xbed3, 0xca6c, 0xdbe5, 0xe97e, 0xf8f7,
@@ -47,13 +41,6 @@ uint16_t crc_ccitt_byte(uint16_t crc, const uint8_t c)
 	return (crc >> 8) ^ crc_ccitt_table[(crc ^ c) & 0xff];
 }
 
-/**
- *	crc_ccitt - recompute the CRC (CRC-CCITT variant) for the data
- *	buffer
- *	@crc: previous CRC value
- *	@buffer: data pointer
- *	@len: number of bytes in the buffer
- */
 uint16_t crc_ccitt(uint16_t crc, uint8_t const *buffer, size_t len)
 {
 	while (len--)

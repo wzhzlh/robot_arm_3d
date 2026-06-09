@@ -2,26 +2,23 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "default",
-            "hidden": true,
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build/${presetName}",
-		    "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
-            "cacheVariables": {
-            }
-        },
-        {
             "name": "Debug",
-            "inherits": "default",
+            "displayName": "Debug",
+            "description": "Debug build with -O0 -g3",
+            "binaryDir": "${sourceDir}/build/Debug",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake"
             }
         },
         {
             "name": "Release",
-            "inherits": "default",
+            "displayName": "Release",
+            "description": "Release build with -Os -g0",
+            "binaryDir": "${sourceDir}/build/Release",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake"
             }
         }
     ],

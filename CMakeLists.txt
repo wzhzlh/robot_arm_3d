@@ -1,81 +1,44 @@
 cmake_minimum_required(VERSION 3.22)
 
-#
-# This file is generated only once,
-# and is not re-generated if converter is called multiple times.
-#
-# User is free to modify the file as much as necessary
-#
+project(robot_arm_3d C ASM)
 
-# Setup compiler settings
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS ON)
+add_compile_definitions(USE_HAL_DRIVER STM32F407xx
+    $<$<CONFIG:Debug>:DEBUG>
+)
 
+set(APP_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/My_task
+    ${CMAKE_CURRENT_SOURCE_DIR}/My_lib
+)
 
-# Define the build type
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
+set(APP_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/My_task/start_task.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/My_task/task_init.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/My_lib/commuction.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/My_lib/crc_ccitt.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/My_lib/drive.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/My_lib/k230.c
+)
 
-# Set the project name
-set(CMAKE_PROJECT_NAME robot_arm_3d)
+add_executable(${CMAKE_PROJECT_NAME} ${APP_SOURCES})
 
-# Enable compile command to ease indexing with e.g. clangd
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+)
 
-# Core project settings
-project(${CMAKE_PROJECT_NAME})
-message("Build type: " ${CMAKE_BUILD_TYPE})
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${APP_INCLUDE_DIRS})
 
-# Enable CMake support for ASM and C languages
-enable_language(C ASM)
-
-# Create an executable object type
-add_executable(${CMAKE_PROJECT_NAME})
-
-# Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
-# Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined library search paths
+target_link_libraries(${CMAKE_PROJECT_NAME} stm32cubemx STM32_Drivers FreeRTOS m)
+
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+    -Wl,-Map=${CMAKE_PROJECT_NAME}.map
+    -Wl,--gc-sections
+    -Wl,--print-memory-usage
 )
 
-# Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-
-        # My task
-        My_task/start_task.c
-        My_task/task_init.c
-
-        # My lib
-        My_lib/commuction.c
-        My_lib/crc_ccitt.c
-        My_lib/drive.c
-        My_lib/k230.c
-        My_lib/motors520.c
-        My_lib/PID_old.c
-)
-
-# Add include paths
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-
-        My_task
-        My_lib
-)
-
-# Add project symbols (macros)
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined symbols
-)
-
-# Remove wrong libob.a library dependency when using cpp files
-list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
-
-# Add linked libraries
-target_link_libraries(${CMAKE_PROJECT_NAME}
-    stm32cubemx
-
-    # Add user defined libraries
+set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+    ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map
 )

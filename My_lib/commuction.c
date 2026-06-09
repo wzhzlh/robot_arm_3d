@@ -1,22 +1,24 @@
 #include "commuction.h"
 #include "start_task.h"
-#include <string.h>
 #include "FreeRTOS.h"
 #include "semphr.h"
+#include <stdio.h>
+#include <string.h>
 
-uint8_t servo_tx_busy = 0;
 SemaphoreHandle_t servo_tx_sem = NULL;
 SemaphoreHandle_t servo_rx_sem = NULL;
-char a[52];
-char b[52];
-char c[52];
-int error_cnt;
-
+SemaphoreHandle_t servo_rx_reply_sem = NULL;
 static char dma_tx_buf[256];
-static uint8_t servo_poll_id = 0;
 
-uint8_t servo_rx_buf[SERVO_RX_BUF_LEN];
-uint8_t servo_rx_data[SERVO_RX_BUF_LEN];
+static const uint32_t SERVO_TX_TIMEOUT = 100;
+static const uint8_t SERVO_MAX_ID = 254;
+static const uint16_t SERVO_POS_MIN = 500;
+static const uint16_t SERVO_POS_MAX = 2500;
+static const uint16_t SERVO_TIME_MAX = 9999;
+static const uint32_t SERVO_RX_TIMEOUT = 30;
+
+uint8_t servo_rx_buf[32];
+uint8_t servo_rx_data[32];
 uint16_t servo_rx_len = 0;
 
 uint8_t g_servo_id = 0;
@@ -31,6 +33,14 @@ static void ServoBus_ClearRxState(void)
     memset(servo_rx_data, 0, sizeof(servo_rx_data));
 }
 
+static void ServoBus_RestartRxDma(void)
+{
+    HAL_UART_DMAStop(&huart2);
+    ServoBus_ClearRxState();
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
+    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+}
+
 void ServoBus_Init(void)
 {
     if(servo_tx_sem == NULL)
@@ -40,6 +50,10 @@ void ServoBus_Init(void)
     if(servo_rx_sem == NULL)
     {
         servo_rx_sem = xSemaphoreCreateBinary();
+    }
+    if(servo_rx_reply_sem == NULL)
+    {
+        servo_rx_reply_sem = xSemaphoreCreateBinary();
     }
 }
 
@@ -62,11 +76,8 @@ HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd)
     }
 
     memcpy(dma_tx_buf, cmd, len);
-    memcpy(c, cmd, len);
-
     xSemaphoreTake(servo_tx_sem, 0);
     HAL_StatusTypeDef status = HAL_UART_Transmit_DMA(&huart2, (uint8_t *)dma_tx_buf, len);
-    memcpy(b, cmd, len);
 
     if(status == HAL_OK)
     {
@@ -79,12 +90,12 @@ HAL_StatusTypeDef ServoBus_SendCmd(const char *cmd)
     return status;
 }
 
+
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     if(huart == &huart2)
     {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        servo_tx_busy = 0;
         xSemaphoreGiveFromISR(servo_tx_sem, &xHigherPriorityTaskWoken);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
@@ -94,33 +105,30 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
     if(huart == &huart2)
     {
-        servo_tx_busy = 0;
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        /* STM32F4: 通过读SR再读DR清除所有错误标志(PE/FE/NE/ORE) */
+        {
+            volatile uint32_t tmp = huart->Instance->SR;
+            tmp = huart->Instance->DR;
+            (void)tmp;
+        }
         servo_error_pending = 1;
-        error_cnt++;
+        if(servo_rx_sem != NULL)
+        {
+            xSemaphoreGiveFromISR(servo_rx_sem, &xHigherPriorityTaskWoken);
+        }
+        if(servo_rx_reply_sem != NULL)
+        {
+            xSemaphoreGiveFromISR(servo_rx_reply_sem, &xHigherPriorityTaskWoken);
+        }
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
 
 void ServoBus_Start_Receive(void)
 {
-    if(servo_rx_sem == NULL)
-    {
-        ServoBus_Init();
-    }
-
-    ServoBus_ClearRxState();
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, servo_rx_buf, SERVO_RX_BUF_LEN);
-    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
-    ServoBus_RequestNextAngle();
-}
-
-void ServoBus_RequestNextAngle(void)
-{
-    ServoBus_ReadAngle(servo_poll_id);
-    servo_poll_id++;
-    if(servo_poll_id >= 3)
-    {
-        servo_poll_id = 0;
-    }
+    ServoBus_Init();
+    ServoBus_RestartRxDma();
 }
 
 void ServoBus_ErrorRecovery(void)
@@ -132,7 +140,6 @@ void ServoBus_ErrorRecovery(void)
 
     servo_error_pending = 0;
     HAL_UART_Abort(&huart2);
-    servo_poll_id = 0;
     ServoBus_Start_Receive();
 }
 
@@ -147,7 +154,7 @@ void ServoBus_ParseReply(void)
     {
         memset(servo_rx_data, 0, sizeof(servo_rx_data));
         servo_rx_len = 0;
-        ServoBus_RequestNextAngle();
+
         return;
     }
 
@@ -161,24 +168,65 @@ void ServoBus_ParseReply(void)
             g_servo_id = (uint8_t)tmp_id;
             g_servo_pwm = (uint16_t)tmp_pwm;
             g_servo_reply_ok = 1;
-
-            if(g_servo_id < 3)
+           
+            if(g_servo_id >= 1 && g_servo_id <= 3)
             {
-                arm.motor[g_servo_id].motor_rx_pos = g_servo_pwm;
+                arm.motor[g_servo_id - 1].motor_rx_pos = g_servo_pwm;
             }
         }
     }
 
     memset(servo_rx_data, 0, sizeof(servo_rx_data));
     servo_rx_len = 0;
-    ServoBus_RequestNextAngle();
+}
+
+HAL_StatusTypeDef ServoBus_SendAndWaitReply(const char *cmd, uint32_t reply_timeout_ms)
+{
+    xSemaphoreTake(servo_rx_reply_sem, 0);
+    g_servo_reply_ok = 0;
+
+    HAL_StatusTypeDef status = ServoBus_SendCmd(cmd);
+    if(status != HAL_OK)
+    {
+        return status;
+    }
+
+    if(xSemaphoreTake(servo_rx_reply_sem, pdMS_TO_TICKS(reply_timeout_ms)) != pdTRUE)
+    {
+        return HAL_TIMEOUT;
+    }
+
+    if(servo_error_pending)
+    {
+        return HAL_ERROR;
+    }
+
+    return g_servo_reply_ok ? HAL_OK : HAL_ERROR;
 }
 
 void ServoBus_TaskReceive(void)
 {
-    if(xSemaphoreTake(servo_rx_sem, portMAX_DELAY) == pdTRUE)
+    if(xSemaphoreTake(servo_rx_sem, pdMS_TO_TICKS(SERVO_RX_TIMEOUT)) == pdTRUE)
     {
-        ServoBus_ParseReply();
+        if(servo_error_pending)
+        {
+            ServoBus_ErrorRecovery();
+        }
+        else if(servo_rx_len > 0)
+        {
+            ServoBus_ParseReply();
+        }
+    }
+    else
+    {
+        if(servo_error_pending)
+        {
+            ServoBus_ErrorRecovery();
+        }
+        else
+        {
+            ServoBus_Start_Receive();
+        }
     }
 }
 
@@ -199,10 +247,12 @@ HAL_StatusTypeDef ServoBus_Move_One(ServoBus_t *servo)
         pos = SERVO_POS_MAX;
     }
 
+#if SERVO_TIME_MIN > 0
     if(servo->target_time < SERVO_TIME_MIN)
     {
         servo->target_time = SERVO_TIME_MIN;
     }
+#endif
     if(servo->target_time > SERVO_TIME_MAX)
     {
         servo->target_time = SERVO_TIME_MAX;
@@ -236,10 +286,12 @@ HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count)
         }
 
         uint16_t time = servos->target_time;
+#if SERVO_TIME_MIN > 0
         if(time < SERVO_TIME_MIN)
         {
             time = SERVO_TIME_MIN;
         }
+#endif
         if(time > SERVO_TIME_MAX)
         {
             time = SERVO_TIME_MAX;
@@ -250,7 +302,6 @@ HAL_StatusTypeDef ServoBus_Move_Many(ServoBus_t *servos, uint8_t count)
     }
 
     strcat(cmd, "}");
-    memcpy(a, cmd, strlen(cmd));
     return ServoBus_SendCmd(cmd);
 }
 
@@ -260,10 +311,9 @@ HAL_StatusTypeDef ServoBus_ReadAngle(uint8_t id)
     {
         return HAL_ERROR;
     }
-
     char cmd[16] = {0};
     sprintf(cmd, "#%03uPRAD!", id);
-    return ServoBus_SendCmd(cmd);
+    return ServoBus_SendAndWaitReply(cmd, SERVO_RX_TIMEOUT);
 }
 
 HAL_StatusTypeDef ServoBus_SetID(uint8_t old_id, uint8_t new_id)

@@ -1,0 +1,52 @@
+
+
+Breakpoint=/home/zhangjiayi/robot_arm_3d/Core/Src/main.c:120:3, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:67, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:84:12, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:105:1, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:115:29, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:126:1, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:172:27, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:179:5, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:201:16, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c:267:1, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:82:1, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:90:5, Permitted Impl.=BP_TYPE_MIXED, State=BP_STATE_DISABLED
+Breakpoint=/home/zhangjiayi/robot_arm_3d/My_task/start_task.c:92:15, State=BP_STATE_DISABLED
+OpenDocument="main.c", FilePath="/home/zhangjiayi/robot_arm_3d/Core/Src/main.c", Line=70
+OpenDocument="stm32f4xx_hal_uart.c", FilePath="/home/zhangjiayi/robot_arm_3d/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c", Line=3605
+OpenDocument="list.c", FilePath="/home/zhangjiayi/robot_arm_3d/Middlewares/Third_Party/FreeRTOS/Source/list.c", Line=92
+OpenDocument="commuction.c", FilePath="/home/zhangjiayi/robot_arm_3d/My_lib/commuction.c", Line=242
+OpenDocument="tasks.c", FilePath="/home/zhangjiayi/robot_arm_3d/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=3636
+OpenDocument="commuction.h", FilePath="/home/zhangjiayi/robot_arm_3d/My_lib/commuction.h", Line=0
+OpenDocument="startup_stm32f407xx.s", FilePath="/home/zhangjiayi/robot_arm_3d/startup_stm32f407xx.s", Line=47
+OpenDocument="task_init.c", FilePath="/home/zhangjiayi/robot_arm_3d/My_task/task_init.c", Line=0
+OpenDocument="start_task.c", FilePath="/home/zhangjiayi/robot_arm_3d/My_task/start_task.c", Line=78
+OpenDocument="drive.c", FilePath="/home/zhangjiayi/robot_arm_3d/My_lib/drive.c", Line=0
+OpenDocument="freertos.c", FilePath="/home/zhangjiayi/robot_arm_3d/Core/Src/freertos.c", Line=51
+OpenDocument="k230.c", FilePath="/home/zhangjiayi/robot_arm_3d/My_lib/k230.c", Line=0
+OpenDocument="stm32f4xx_it.c", FilePath="/home/zhangjiayi/robot_arm_3d/Core/Src/stm32f4xx_it.c", Line=76
+OpenToolbar="Debug", Floating=0, x=0, y=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=2, w=319, h=521, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=2, w=749, h=212, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=319, h=440, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Break & Tracepoints", DockArea=LEFT, x=0, y=0, w=749, h=297, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VectorCatchIndexMask=254
+OpenWindow="Memory 1", DockArea=BOTTOM, x=1, y=0, w=1236, h=94, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=3, w=749, h=514, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Functions", DockArea=LEFT, x=0, y=1, w=749, h=325, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=1248, h=94, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=1, w=319, h=393, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing="Task List"
+SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
+TableHeader="Vector Catches", SortCol="", SortOrder="ASCENDING", VisibleCols=["";"Vector Catch";"Description"], ColWidths=[50;300;500]
+TableHeader="Break & Tracepoints", SortCol="", SortOrder="ASCENDING", VisibleCols=["";"Type";"Location";"Extras"], ColWidths=[100;100;413;539]
+TableHeader="Functions", SortCol="Name", SortOrder="DESCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[1435;100;100;100;252]
+TableHeader="Source Files", SortCol="Status", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[239;100;100;100;735]
+TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
+TableHeader="Task List", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Name";"Run Count";"Priority";"Status";"Timeout";"Stack Info";"ID";"Mutex Count";"Notified Value";"Notify State"], ColWidths=[110;110;110;110;110;110;110;110;110;110]
+TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[100;105;105]
+TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[105;100;100;444]
+TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
+WatchedExpression="arm", Window=Watched Data 1
+WatchedExpression="succse_cnt", Window=Watched Data 1
+WatchedExpression="error_cnt", Window=Watched Data 1
+WatchedExpression="ret", Window=Watched Data 1

@@ -6,34 +6,23 @@
 #include "drive.h"
 #include "commuction.h"
 #include "k230.h"
+#include "adc.h"
+typedef enum {
+    ARM_IDLE = 0,
+    ARM_MOVE_TO_TARGET,     // 移动到目标位置
+    ARM_ARRIVED,           // 已到达目标位置
+    ARM_RETURN_HOME        // 返回原点
+} ArmStateTypeDef;
 
-/* ---------------------------------------------------------------
- * 矩形轨迹参数（供 requiremnet2 使用）
- * --------------------------------------------------------------- */
-#define SQ_Z    0.10f   /* 末端高度，离桌面约 5cm */
-#define SQ_X0   0.10f   /* x 最小 */
-#define SQ_X1   0.20f   /* x 最大 */
-#define SQ_Y0  -0.05f   /* y 最小 */
-#define SQ_Y1   0.05f   /* y 最大 */
-
-#define INTERP_STEPS    5
-#define INTERP_STEP_MS  200
-
-/* ==================== 全局变量声明 ==================== */
 extern ServoBus_t arm;
-
-/* ==================== FreeRTOS 任务函数声明 ==================== */
-// void requirement(void  * argument);
-void mot_rece(void * argument);
-// void k230_receive(void *argument);
-// void requiremnet_2(void *argument);
-/* ==================== 非 static 函数声明 ==================== */
+extern ArmStateTypeDef arm_state;
+void requirement(void  * argument);
+// void mot_rece(void * argument);
 void arm_init(void);
-void requiremnet1(void);
-void requiremnet2(void);
-void requiremnet3(void);
-void requirement3(void);
-void requirement4(void);
-void requirement5(void);
+void requirement_1(void);
+void requirement_2(void);
+void requirement_3(void);
+float ADC_GetValue(void);
+
 
 #endif

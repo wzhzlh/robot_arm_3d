@@ -121,12 +121,11 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+	task_init();
   /* Infinite loop */
  
   for(;;)
   {
-
-   task_init();
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
