@@ -33,21 +33,10 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 #ifndef __VFP_FP__
 	#error This port can only be used when the project options are configured to enable hardware floating point support.
 #endif
 
-=======
-#ifndef __TARGET_FPU_VFP
-	#error This port can only be used when the project options are configured to enable hardware floating point support.
-#endif
-
-#if configMAX_SYSCALL_INTERRUPT_PRIORITY == 0
-	#error configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to 0.  See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html
-#endif
-
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 #ifndef configSYSTICK_CLOCK_HZ
 	#define configSYSTICK_CLOCK_HZ configCPU_CLOCK_HZ
 	/* Ensure the SysTick is clocked at the same frequency as the core. */
@@ -58,18 +47,6 @@
 	#define portNVIC_SYSTICK_CLK_BIT	( 0 )
 #endif
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
-=======
-/* Legacy macro for backward compatibility only.  This macro used to be used to
-replace the function that configures the clock used to generate the tick
-interrupt (prvSetupTimerInterrupt()), but now the function is declared weak so
-the application writer can override it by simply defining a function of the
-same name (vApplicationSetupTickInterrupt()). */
-#ifndef configOVERRIDE_DEFAULT_TICK_CONFIGURATION
-	#define configOVERRIDE_DEFAULT_TICK_CONFIGURATION 0
-#endif
-
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 /* Constants required to manipulate the core.  Registers first... */
 #define portNVIC_SYSTICK_CTRL_REG			( * ( ( volatile uint32_t * ) 0xe000e010 ) )
 #define portNVIC_SYSTICK_LOAD_REG			( * ( ( volatile uint32_t * ) 0xe000e014 ) )
@@ -105,7 +82,6 @@ r0p1 port. */
 #define portVECTACTIVE_MASK					( 0xFFUL )
 
 /* Constants required to manipulate the VFP. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 #define portFPCCR							( ( volatile uint32_t * ) 0xe000ef34 ) /* Floating point context control register. */
 #define portASPEN_AND_LSPEN_BITS			( 0x3UL << 30UL )
 
@@ -119,22 +95,10 @@ r0p1 port. */
 /* For strict compliance with the Cortex-M spec the task start address should
 have bit-0 clear, as it is loaded into the PC on exit from an ISR. */
 #define portSTART_ADDRESS_MASK		( ( StackType_t ) 0xfffffffeUL )
-=======
-#define portFPCCR					( ( volatile uint32_t * ) 0xe000ef34 ) /* Floating point context control register. */
-#define portASPEN_AND_LSPEN_BITS	( 0x3UL << 30UL )
-
-/* Constants required to set up the initial stack. */
-#define portINITIAL_XPSR			( 0x01000000 )
-#define portINITIAL_EXC_RETURN		( 0xfffffffd )
-
-/* The systick is a 24-bit counter. */
-#define portMAX_24_BIT_NUMBER		( 0xffffffUL )
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 /* A fiddle factor to estimate the number of SysTick counts that would have
 occurred while the SysTick counter is stopped during tickless idle
 calculations. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 #define portMISSED_COUNTS_FACTOR			( 45UL )
 
 /* Let the user override the pre-loading of the initial LR with the address of
@@ -145,13 +109,6 @@ debugger. */
 #else
 	#define portTASK_RETURN_ADDRESS	prvTaskExitError
 #endif
-=======
-#define portMISSED_COUNTS_FACTOR	( 45UL )
-
-/* For strict compliance with the Cortex-M spec the task start address should
-have bit-0 clear, as it is loaded into the PC on exit from an ISR. */
-#define portSTART_ADDRESS_MASK		( ( StackType_t ) 0xfffffffeUL )
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 /*
  * Setup the timer to generate the tick interrupts.  The implementation in this
@@ -163,34 +120,19 @@ void vPortSetupTimerInterrupt( void );
 /*
  * Exception handlers.
  */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 void xPortPendSVHandler( void ) __attribute__ (( naked ));
 void xPortSysTickHandler( void );
 void vPortSVCHandler( void ) __attribute__ (( naked ));
-=======
-void xPortPendSVHandler( void );
-void xPortSysTickHandler( void );
-void vPortSVCHandler( void );
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 /*
  * Start first task is a separate function so it can be tested in isolation.
  */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 static void prvPortStartFirstTask( void ) __attribute__ (( naked ));
 
 /*
  * Function to enable the VFP.
  */
 static void vPortEnableVFP( void ) __attribute__ (( naked ));
-=======
-static void prvStartFirstTask( void );
-
-/*
- * Functions defined in portasm.s to enable the VFP.
- */
-static void prvEnableVFP( void );
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 /*
  * Used to catch tasks that attempt to return from their implementing function.
@@ -231,17 +173,10 @@ static UBaseType_t uxCriticalNesting = 0xaaaaaaaa;
  * FreeRTOS API functions are not called from interrupts that have been assigned
  * a priority above configMAX_SYSCALL_INTERRUPT_PRIORITY.
  */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 #if( configASSERT_DEFINED == 1 )
 	 static uint8_t ucMaxSysCallPriority = 0;
 	 static uint32_t ulMaxPRIGROUPValue = 0;
 	 static const volatile uint8_t * const pcInterruptPriorityRegisters = ( const volatile uint8_t * const ) portNVIC_IP_REGISTERS_OFFSET_16;
-=======
-#if ( configASSERT_DEFINED == 1 )
-	 static uint8_t ucMaxSysCallPriority = 0;
-	 static uint32_t ulMaxPRIGROUPValue = 0;
-	 static const volatile uint8_t * const pcInterruptPriorityRegisters = ( uint8_t * ) portNVIC_IP_REGISTERS_OFFSET_16;
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 #endif /* configASSERT_DEFINED */
 
 /*-----------------------------------------------------------*/
@@ -262,11 +197,7 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 	pxTopOfStack--;
 	*pxTopOfStack = ( ( StackType_t ) pxCode ) & portSTART_ADDRESS_MASK;	/* PC */
 	pxTopOfStack--;
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 	*pxTopOfStack = ( StackType_t ) portTASK_RETURN_ADDRESS;	/* LR */
-=======
-	*pxTopOfStack = ( StackType_t ) prvTaskExitError;	/* LR */
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 	/* Save code space by skipping register initialisation. */
 	pxTopOfStack -= 5;	/* R12, R3, R2 and R1. */
@@ -285,11 +216,8 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 
 static void prvTaskExitError( void )
 {
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 volatile uint32_t ulDummy = 0;
 
-=======
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 	/* A function that implements a task must not exit or attempt to return to
 	its caller as there is nothing to return to.  If a task wants to exit it
 	should instead call vTaskDelete( NULL ).
@@ -298,7 +226,6 @@ volatile uint32_t ulDummy = 0;
 	defined, then stop here so application writers can catch the error. */
 	configASSERT( uxCriticalNesting == ~0UL );
 	portDISABLE_INTERRUPTS();
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 	while( ulDummy == 0 )
 	{
 		/* This file calls prvTaskExitError() after the scheduler has been
@@ -351,71 +278,6 @@ static void prvPortStartFirstTask( void )
 					" svc 0					\n" /* System call to start first task. */
 					" nop					\n"
 				);
-=======
-	for( ;; );
-}
-/*-----------------------------------------------------------*/
-
-__asm void vPortSVCHandler( void )
-{
-	PRESERVE8
-
-	/* Get the location of the current TCB. */
-	ldr	r3, =pxCurrentTCB
-	ldr r1, [r3]
-	ldr r0, [r1]
-	/* Pop the core registers. */
-	ldmia r0!, {r4-r11, r14}
-	msr psp, r0
-	isb
-	mov r0, #0
-	msr	basepri, r0
-	bx r14
-}
-/*-----------------------------------------------------------*/
-
-__asm void prvStartFirstTask( void )
-{
-	PRESERVE8
-
-	/* Use the NVIC offset register to locate the stack. */
-	ldr r0, =0xE000ED08
-	ldr r0, [r0]
-	ldr r0, [r0]
-	/* Set the msp back to the start of the stack. */
-	msr msp, r0
-	/* Clear the bit that indicates the FPU is in use in case the FPU was used
-	before the scheduler was started - which would otherwise result in the
-	unnecessary leaving of space in the SVC stack for lazy saving of FPU
-	registers. */
-	mov r0, #0
-	msr control, r0
-	/* Globally enable interrupts. */
-	cpsie i
-	cpsie f
-	dsb
-	isb
-	/* Call SVC to start the first task. */
-	svc 0
-	nop
-	nop
-}
-/*-----------------------------------------------------------*/
-
-__asm void prvEnableVFP( void )
-{
-	PRESERVE8
-
-	/* The FPU enable bits are in the CPACR. */
-	ldr.w r0, =0xE000ED88
-	ldr	r1, [r0]
-
-	/* Enable CP10 and CP11 coprocessors, then save back. */
-	orr	r1, r1, #( 0xf << 20 )
-	str r1, [r0]
-	bx	r14
-	nop
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 }
 /*-----------------------------------------------------------*/
 
@@ -437,11 +299,7 @@ BaseType_t xPortStartScheduler( void )
 	#if( configASSERT_DEFINED == 1 )
 	{
 		volatile uint32_t ulOriginalPriority;
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 		volatile uint8_t * const pucFirstUserPriorityRegister = ( volatile uint8_t * const ) ( portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER );
-=======
-		volatile uint8_t * const pucFirstUserPriorityRegister = ( uint8_t * ) ( portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER );
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 		volatile uint8_t ucMaxPriorityValue;
 
 		/* Determine the maximum priority from which ISR safe FreeRTOS API
@@ -459,13 +317,6 @@ BaseType_t xPortStartScheduler( void )
 		/* Read the value back to see how many bits stuck. */
 		ucMaxPriorityValue = *pucFirstUserPriorityRegister;
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
-=======
-		/* The kernel interrupt priority should be set to the lowest
-		priority. */
-		configASSERT( ucMaxPriorityValue == ( configKERNEL_INTERRUPT_PRIORITY & ucMaxPriorityValue ) );
-
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 		/* Use the same mask on the maximum system call priority. */
 		ucMaxSysCallPriority = configMAX_SYSCALL_INTERRUPT_PRIORITY & ucMaxPriorityValue;
 
@@ -519,17 +370,12 @@ BaseType_t xPortStartScheduler( void )
 	uxCriticalNesting = 0;
 
 	/* Ensure the VFP is enabled - it should be anyway. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 	vPortEnableVFP();
-=======
-	prvEnableVFP();
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 	/* Lazy save always. */
 	*( portFPCCR ) |= portASPEN_AND_LSPEN_BITS;
 
 	/* Start the first task. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 	prvPortStartFirstTask();
 
 	/* Should never get here as the tasks will now be executing!  Call the task
@@ -540,9 +386,6 @@ BaseType_t xPortStartScheduler( void )
 	symbol. */
 	vTaskSwitchContext();
 	prvTaskExitError();
-=======
-	prvStartFirstTask();
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 	/* Should not get here! */
 	return 0;
@@ -585,7 +428,6 @@ void vPortExitCritical( void )
 }
 /*-----------------------------------------------------------*/
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 void xPortPendSVHandler( void )
 {
 	/* This is a naked function. */
@@ -640,67 +482,6 @@ void xPortPendSVHandler( void )
 	"pxCurrentTCBConst: .word pxCurrentTCB	\n"
 	::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY)
 	);
-=======
-__asm void xPortPendSVHandler( void )
-{
-	extern uxCriticalNesting;
-	extern pxCurrentTCB;
-	extern vTaskSwitchContext;
-
-	PRESERVE8
-
-	mrs r0, psp
-	isb
-	/* Get the location of the current TCB. */
-	ldr	r3, =pxCurrentTCB
-	ldr	r2, [r3]
-
-	/* Is the task using the FPU context?  If so, push high vfp registers. */
-	tst r14, #0x10
-	it eq
-	vstmdbeq r0!, {s16-s31}
-
-	/* Save the core registers. */
-	stmdb r0!, {r4-r11, r14}
-
-	/* Save the new top of stack into the first member of the TCB. */
-	str r0, [r2]
-
-	stmdb sp!, {r0, r3}
-	mov r0, #configMAX_SYSCALL_INTERRUPT_PRIORITY
-	msr basepri, r0
-	dsb
-	isb
-	bl vTaskSwitchContext
-	mov r0, #0
-	msr basepri, r0
-	ldmia sp!, {r0, r3}
-
-	/* The first item in pxCurrentTCB is the task top of stack. */
-	ldr r1, [r3]
-	ldr r0, [r1]
-
-	/* Pop the core registers. */
-	ldmia r0!, {r4-r11, r14}
-
-	/* Is the task using the FPU context?  If so, pop the high vfp registers
-	too. */
-	tst r14, #0x10
-	it eq
-	vldmiaeq r0!, {s16-s31}
-
-	msr psp, r0
-	isb
-	#ifdef WORKAROUND_PMU_CM001 /* XMC4000 specific errata */
-		#if WORKAROUND_PMU_CM001 == 1
-			push { r14 }
-			pop { pc }
-			nop
-		#endif
-	#endif
-
-	bx r14
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 }
 /*-----------------------------------------------------------*/
 
@@ -709,14 +490,8 @@ void xPortSysTickHandler( void )
 	/* The SysTick runs at the lowest interrupt priority, so when this interrupt
 	executes all interrupts must be unmasked.  There is therefore no need to
 	save and then restore the interrupt mask value as its value is already
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 	known. */
 	portDISABLE_INTERRUPTS();
-=======
-	known - therefore the slightly faster vPortRaiseBASEPRI() function is used
-	in place of portSET_INTERRUPT_MASK_FROM_ISR(). */
-	vPortRaiseBASEPRI();
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 	{
 		/* Increment the RTOS tick. */
 		if( xTaskIncrementTick() != pdFALSE )
@@ -726,21 +501,13 @@ void xPortSysTickHandler( void )
 			portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
 		}
 	}
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 	portENABLE_INTERRUPTS();
-=======
-	vPortClearBASEPRIFromISR();
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 }
 /*-----------------------------------------------------------*/
 
 #if( configUSE_TICKLESS_IDLE == 1 )
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 	__attribute__((weak)) void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime )
-=======
-	__weak void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime )
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 	{
 	uint32_t ulReloadValue, ulCompleteTickPeriods, ulCompletedSysTickDecrements;
 	TickType_t xModifiableIdleTime;
@@ -768,15 +535,9 @@ void xPortSysTickHandler( void )
 
 		/* Enter a critical section but don't use the taskENTER_CRITICAL()
 		method as that will mask interrupts that should exit sleep mode. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 		__asm volatile( "cpsid i" ::: "memory" );
 		__asm volatile( "dsb" );
 		__asm volatile( "isb" );
-=======
-		__disable_irq();
-		__dsb( portSY_FULL_READ_WRITE );
-		__isb( portSY_FULL_READ_WRITE );
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 		/* If a context switch is pending or a task is waiting for the scheduler
 		to be unsuspended then abandon the low power entry. */
@@ -793,15 +554,9 @@ void xPortSysTickHandler( void )
 			periods. */
 			portNVIC_SYSTICK_LOAD_REG = ulTimerCountsForOneTick - 1UL;
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 			/* Re-enable interrupts - see comments above the cpsid instruction()
 			above. */
 			__asm volatile( "cpsie i" ::: "memory" );
-=======
-			/* Re-enable interrupts - see comments above __disable_irq() call
-			above. */
-			__enable_irq();
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 		}
 		else
 		{
@@ -824,44 +579,26 @@ void xPortSysTickHandler( void )
 			configPRE_SLEEP_PROCESSING( xModifiableIdleTime );
 			if( xModifiableIdleTime > 0 )
 			{
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 				__asm volatile( "dsb" ::: "memory" );
 				__asm volatile( "wfi" );
 				__asm volatile( "isb" );
-=======
-				__dsb( portSY_FULL_READ_WRITE );
-				__wfi();
-				__isb( portSY_FULL_READ_WRITE );
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 			}
 			configPOST_SLEEP_PROCESSING( xExpectedIdleTime );
 
 			/* Re-enable interrupts to allow the interrupt that brought the MCU
 			out of sleep mode to execute immediately.  see comments above
 			__disable_interrupt() call above. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 			__asm volatile( "cpsie i" ::: "memory" );
 			__asm volatile( "dsb" );
 			__asm volatile( "isb" );
-=======
-			__enable_irq();
-			__dsb( portSY_FULL_READ_WRITE );
-			__isb( portSY_FULL_READ_WRITE );
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 			/* Disable interrupts again because the clock is about to be stopped
 			and interrupts that execute while the clock is stopped will increase
 			any slippage between the time maintained by the RTOS and calendar
 			time. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 			__asm volatile( "cpsid i" ::: "memory" );
 			__asm volatile( "dsb" );
 			__asm volatile( "isb" );
-=======
-			__disable_irq();
-			__dsb( portSY_FULL_READ_WRITE );
-			__isb( portSY_FULL_READ_WRITE );
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 			/* Disable the SysTick clock without reading the
 			portNVIC_SYSTICK_CTRL_REG register to ensure the
@@ -928,16 +665,11 @@ void xPortSysTickHandler( void )
 			portNVIC_SYSTICK_LOAD_REG = ulTimerCountsForOneTick - 1UL;
 
 			/* Exit with interrupts enabled. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 			__asm volatile( "cpsie i" ::: "memory" );
-=======
-			__enable_irq();
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 		}
 	}
 
 #endif /* #if configUSE_TICKLESS_IDLE */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 /*-----------------------------------------------------------*/
 
 /*
@@ -977,46 +709,6 @@ static void vPortEnableVFP( void )
 		"	str r1, [r0]				\n"
 		"	bx r14						"
 	);
-=======
-
-/*-----------------------------------------------------------*/
-
-/*
- * Setup the SysTick timer to generate the tick interrupts at the required
- * frequency.
- */
-#if( configOVERRIDE_DEFAULT_TICK_CONFIGURATION == 0 )
-
-	__weak void vPortSetupTimerInterrupt( void )
-	{
-		/* Calculate the constants required to configure the tick interrupt. */
-		#if( configUSE_TICKLESS_IDLE == 1 )
-		{
-			ulTimerCountsForOneTick = ( configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ );
-			xMaximumPossibleSuppressedTicks = portMAX_24_BIT_NUMBER / ulTimerCountsForOneTick;
-			ulStoppedTimerCompensation = portMISSED_COUNTS_FACTOR / ( configCPU_CLOCK_HZ / configSYSTICK_CLOCK_HZ );
-		}
-		#endif /* configUSE_TICKLESS_IDLE */
-
-		/* Stop and clear the SysTick. */
-		portNVIC_SYSTICK_CTRL_REG = 0UL;
-		portNVIC_SYSTICK_CURRENT_VALUE_REG = 0UL;
-
-		/* Configure SysTick to interrupt at the requested rate. */
-		portNVIC_SYSTICK_LOAD_REG = ( configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ ) - 1UL;
-		portNVIC_SYSTICK_CTRL_REG = ( portNVIC_SYSTICK_CLK_BIT | portNVIC_SYSTICK_INT_BIT | portNVIC_SYSTICK_ENABLE_BIT );
-	}
-
-#endif /* configOVERRIDE_DEFAULT_TICK_CONFIGURATION */
-/*-----------------------------------------------------------*/
-
-__asm uint32_t vPortGetIPSR( void )
-{
-	PRESERVE8
-
-	mrs r0, ipsr
-	bx r14
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 }
 /*-----------------------------------------------------------*/
 
@@ -1028,11 +720,7 @@ __asm uint32_t vPortGetIPSR( void )
 	uint8_t ucCurrentPriority;
 
 		/* Obtain the number of the currently executing interrupt. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 		__asm volatile( "mrs %0, ipsr" : "=r"( ulCurrentInterrupt ) :: "memory" );
-=======
-		ulCurrentInterrupt = vPortGetIPSR();
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 
 		/* Is the interrupt number a user defined interrupt? */
 		if( ulCurrentInterrupt >= portFIRST_USER_INTERRUPT_NUMBER )

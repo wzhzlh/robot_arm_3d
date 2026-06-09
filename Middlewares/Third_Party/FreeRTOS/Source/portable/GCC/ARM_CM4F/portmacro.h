@@ -73,37 +73,19 @@ typedef unsigned long UBaseType_t;
 #define portSTACK_GROWTH			( -1 )
 #define portTICK_PERIOD_MS			( ( TickType_t ) 1000 / configTICK_RATE_HZ )
 #define portBYTE_ALIGNMENT			8
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 /*-----------------------------------------------------------*/
 
 /* Scheduler utilities. */
 #define portYIELD() 															\
-=======
-
-/* Constants used with memory barrier intrinsics. */
-#define portSY_FULL_READ_WRITE		( 15 )
-
-/*-----------------------------------------------------------*/
-
-/* Scheduler utilities. */
-#define portYIELD()																\
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 {																				\
 	/* Set a PendSV to request a context switch. */								\
 	portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;								\
 																				\
 	/* Barriers are normally not required but do ensure the code is completely	\
 	within the specified behaviour for the architecture. */						\
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 	__asm volatile( "dsb" ::: "memory" );										\
 	__asm volatile( "isb" );													\
 }
-=======
-	__dsb( portSY_FULL_READ_WRITE );											\
-	__isb( portSY_FULL_READ_WRITE );											\
-}
-/*-----------------------------------------------------------*/
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 
 #define portNVIC_INT_CTRL_REG		( * ( ( volatile uint32_t * ) 0xe000ed04 ) )
 #define portNVIC_PENDSVSET_BIT		( 1UL << 28UL )
@@ -114,7 +96,6 @@ typedef unsigned long UBaseType_t;
 /* Critical section management. */
 extern void vPortEnterCritical( void );
 extern void vPortExitCritical( void );
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 #define portSET_INTERRUPT_MASK_FROM_ISR()		ulPortRaiseBASEPRI()
 #define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)	vPortSetBASEPRI(x)
 #define portDISABLE_INTERRUPTS()				vPortRaiseBASEPRI()
@@ -131,18 +112,6 @@ not necessary for to use this port.  They are defined so the common demo files
 #define portTASK_FUNCTION( vFunction, pvParameters ) void vFunction( void *pvParameters )
 /*-----------------------------------------------------------*/
 
-=======
-
-#define portDISABLE_INTERRUPTS()				vPortRaiseBASEPRI()
-#define portENABLE_INTERRUPTS()					vPortSetBASEPRI( 0 )
-#define portENTER_CRITICAL()					vPortEnterCritical()
-#define portEXIT_CRITICAL()						vPortExitCritical()
-#define portSET_INTERRUPT_MASK_FROM_ISR()		ulPortRaiseBASEPRI()
-#define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)	vPortSetBASEPRI(x)
-
-/*-----------------------------------------------------------*/
-
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 /* Tickless idle/low power functionality. */
 #ifndef portSUPPRESS_TICKS_AND_SLEEP
 	extern void vPortSuppressTicksAndSleep( TickType_t xExpectedIdleTime );
@@ -150,18 +119,13 @@ not necessary for to use this port.  They are defined so the common demo files
 #endif
 /*-----------------------------------------------------------*/
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 /* Architecture specific optimisations. */
-=======
-/* Port specific optimisations. */
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 #ifndef configUSE_PORT_OPTIMISED_TASK_SELECTION
 	#define configUSE_PORT_OPTIMISED_TASK_SELECTION 1
 #endif
 
 #if configUSE_PORT_OPTIMISED_TASK_SELECTION == 1
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 	/* Generic helper function. */
 	__attribute__( ( always_inline ) ) static inline uint8_t ucPortCountLeadingZeros( uint32_t ulBitmap )
 	{
@@ -171,8 +135,6 @@ not necessary for to use this port.  They are defined so the common demo files
 		return ucReturn;
 	}
 
-=======
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 	/* Check the configuration. */
 	#if( configMAX_PRIORITIES > 32 )
 		#error configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIORITIES is less than or equal to 32.  It is very rare that a system requires more than 10 to 15 difference priorities as tasks that share a priority will time slice.
@@ -184,23 +146,10 @@ not necessary for to use this port.  They are defined so the common demo files
 
 	/*-----------------------------------------------------------*/
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 	#define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) uxTopPriority = ( 31UL - ( uint32_t ) ucPortCountLeadingZeros( ( uxReadyPriorities ) ) )
 
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
 
-=======
-	#define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) uxTopPriority = ( 31UL - ( uint32_t ) __clz( ( uxReadyPriorities ) ) )
-
-#endif /* taskRECORD_READY_PRIORITY */
-/*-----------------------------------------------------------*/
-
-/* Task function macros as described on the FreeRTOS.org WEB site.  These are
-not necessary for to use this port.  They are defined so the common demo files
-(which build with all the ports) will build. */
-#define portTASK_FUNCTION_PROTO( vFunction, pvParameters ) void vFunction( void *pvParameters )
-#define portTASK_FUNCTION( vFunction, pvParameters ) void vFunction( void *pvParameters )
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 /*-----------------------------------------------------------*/
 
 #ifdef configASSERT
@@ -211,7 +160,6 @@ not necessary for to use this port.  They are defined so the common demo files
 /* portNOP() is not required by this port. */
 #define portNOP()
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 #define portINLINE	__inline
 
 #ifndef portFORCE_INLINE
@@ -219,86 +167,12 @@ not necessary for to use this port.  They are defined so the common demo files
 #endif
 
 portFORCE_INLINE static BaseType_t xPortIsInsideInterrupt( void )
-=======
-#define portINLINE __inline
-
-#ifndef portFORCE_INLINE
-	#define portFORCE_INLINE __forceinline
-#endif
-
-/*-----------------------------------------------------------*/
-
-static portFORCE_INLINE void vPortSetBASEPRI( uint32_t ulBASEPRI )
-{
-	__asm
-	{
-		/* Barrier instructions are not used as this function is only used to
-		lower the BASEPRI value. */
-		msr basepri, ulBASEPRI
-	}
-}
-/*-----------------------------------------------------------*/
-
-static portFORCE_INLINE void vPortRaiseBASEPRI( void )
-{
-uint32_t ulNewBASEPRI = configMAX_SYSCALL_INTERRUPT_PRIORITY;
-
-	__asm
-	{
-		/* Set BASEPRI to the max syscall priority to effect a critical
-		section. */
-		msr basepri, ulNewBASEPRI
-		dsb
-		isb
-	}
-}
-/*-----------------------------------------------------------*/
-
-static portFORCE_INLINE void vPortClearBASEPRIFromISR( void )
-{
-	__asm
-	{
-		/* Set BASEPRI to 0 so no interrupts are masked.  This function is only
-		used to lower the mask in an interrupt, so memory barriers are not 
-		used. */
-		msr basepri, #0
-	}
-}
-/*-----------------------------------------------------------*/
-
-static portFORCE_INLINE uint32_t ulPortRaiseBASEPRI( void )
-{
-uint32_t ulReturn, ulNewBASEPRI = configMAX_SYSCALL_INTERRUPT_PRIORITY;
-
-	__asm
-	{
-		/* Set BASEPRI to the max syscall priority to effect a critical
-		section. */
-		mrs ulReturn, basepri
-		msr basepri, ulNewBASEPRI
-		dsb
-		isb
-	}
-
-	return ulReturn;
-}
-/*-----------------------------------------------------------*/
-
-static portFORCE_INLINE BaseType_t xPortIsInsideInterrupt( void )
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 {
 uint32_t ulCurrentInterrupt;
 BaseType_t xReturn;
 
 	/* Obtain the number of the currently executing interrupt. */
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 	__asm volatile( "mrs %0, ipsr" : "=r"( ulCurrentInterrupt ) :: "memory" );
-=======
-	__asm
-	{
-		mrs ulCurrentInterrupt, ipsr
-	}
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 
 	if( ulCurrentInterrupt == 0 )
 	{
@@ -312,7 +186,6 @@ BaseType_t xReturn;
 	return xReturn;
 }
 
-<<<<<<< HEAD:Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h
 /*-----------------------------------------------------------*/
 
 portFORCE_INLINE static void vPortRaiseBASEPRI( void )
@@ -361,8 +234,6 @@ portFORCE_INLINE static void vPortSetBASEPRI( uint32_t ulNewMaskValue )
 /*-----------------------------------------------------------*/
 
 #define portMEMORY_BARRIER() __asm volatile( "" ::: "memory" )
-=======
->>>>>>> origin/main:Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
 
 #ifdef __cplusplus
 }
