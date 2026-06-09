@@ -16,9 +16,9 @@ typedef enum {
 
 typedef struct {
     int a;
-    uint8_t x;
-    uint8_t y;
-    uint8_t z;
+    float x;
+    float y;
+    float z;
 } K230_TargetPosTypeDef;
 
 extern  K230_TargetPosTypeDef k230_rx_buf;

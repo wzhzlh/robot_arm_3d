@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
 T1694 000:007.974   SEGGER J-Link V9.42 Log File
 T1694 000:008.097   DLL Compiled: May  6 2026 12:25:27
 T1694 000:008.141   Logging started @ 2026-06-09 12:00
@@ -141551,6 +141554,7 @@ T1694 1093:936.384 JLINK_ReadMemEx(0x200043B0, 0x8 Bytes, Flags = 0x02000000)
 T1694 1093:936.384    -- Read from C cache (8 bytes @ 0x200043B0)
 T1694 1093:936.384   Data:  00 00 00 00 52 B8 9E 3F
 T1694 1093:936.384 - 0.044ms returns 8 (0x8)
+<<<<<<< HEAD
 T1694 1207:791.872 JLINK_ReadMemEx(0x08002CF4, 0x3C Bytes, Flags = 0x02000000)
 T1694 1207:791.872    -- Read from flash cache (60 bytes @ 0x08002CF4)
 T1694 1207:791.872   Data:  2A EE AA 0A 09 EE 90 0A 09 EE A9 0A 00 F0 AC FF ...
@@ -143607,3 +143611,5 @@ T1D80 030:401.610    -- Read from C cache (4 bytes @ 0x20000084)
 T1D80 030:401.628   Data:  B8 10 00 20
 T1D80 030:401.648 - 0.085ms returns 4 (0x4)
 >>>>>>> 8d1349b22f85497aeafdc0ef5a18761295c98d9a
+=======
+>>>>>>> origin/main
