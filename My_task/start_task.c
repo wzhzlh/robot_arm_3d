@@ -117,7 +117,7 @@ void requirement_2(void)
     float last_x = 0.0f, last_y = 0.0f, last_z = 0.0f;
     uint8_t steps = 5;
     uint16_t step_ms = 200;
-
+    k230_comm_status = K230_RECEIVED_OK;
     for(;;)
     {
         if(k230_comm_status == K230_RECEIVED_OK)

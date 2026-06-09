@@ -60,21 +60,7 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void Servo_SendCmd(uint8_t id, uint16_t pos, uint16_t time)
-{
-    char cmd[32];
 
-    sprintf(cmd,
-            "#%03dP%04dT%04d!",
-            id,
-            pos,
-            time);
-
-    HAL_UART_Transmit(&huart3,
-                      (uint8_t*)cmd,
-                      strlen(cmd),
-                      100);
-}
 /* USER CODE END 0 */
 
 /**

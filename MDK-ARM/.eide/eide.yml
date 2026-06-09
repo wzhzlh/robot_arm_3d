@@ -85,6 +85,8 @@ virtualFolder:
         - path: ../My_lib/k230.h
         - path: ../My_lib/PID_old.c
         - path: ../My_lib/PID_old.h
+        - path: ../My_lib/motors520.c
+        - path: ../My_lib/motors520.h
       folders: []
     - name: My_task
       files:
@@ -121,7 +123,8 @@ targets:
         - RTE/_robot_arm_3d
       libList: []
     excludeList: []
-    settings: {}
+    settings:
+      debugger: cortex-debug
     toolchain: AC5
     toolchainConfigMap:
       AC5:
