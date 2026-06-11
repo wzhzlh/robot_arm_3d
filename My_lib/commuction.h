@@ -33,9 +33,9 @@ typedef struct {
 
 typedef struct {
     uint8_t id;
-    uint16_t motor_tx_pos;
-    uint16_t motor_rx_pos;
-    float offset;
+    double motor_tx_pos;
+    double motor_rx_pos;
+    double offset;
 } motor_t;
 
 typedef struct {

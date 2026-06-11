@@ -6,6 +6,7 @@ packDir: null
 srcDirs:
   - ../My_task
   - ../My_lib
+  - ../k230_py
 virtualFolder:
   name: <virtual_root>
   files: []
@@ -83,10 +84,6 @@ virtualFolder:
         - path: ../My_lib/drive.h
         - path: ../My_lib/k230.c
         - path: ../My_lib/k230.h
-        - path: ../My_lib/PID_old.c
-        - path: ../My_lib/PID_old.h
-        - path: ../My_lib/motors520.c
-        - path: ../My_lib/motors520.h
       folders: []
     - name: My_task
       files:
@@ -123,8 +120,7 @@ targets:
         - RTE/_robot_arm_3d
       libList: []
     excludeList: []
-    settings:
-      debugger: cortex-debug
+    settings: {}
     toolchain: AC5
     toolchainConfigMap:
       AC5:

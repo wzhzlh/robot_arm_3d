@@ -28,7 +28,7 @@ static void update_linear_trajectory(LinearTrajectory3D *traj,
                                      uint32_t total_time_ms);
 static void line_interp(float x0, float y0, float z0,
                         float x1, float y1, float z1,
-                        uint8_t steps, uint16_t step_time);
+                        uint16_t steps, uint16_t step_time);
 
 
 
@@ -112,33 +112,50 @@ void requirement_1(void)
 void requirement_2(void)
 {
     arm_init();
+    vTaskDelay(1000);
     K230_UART_Init();
-
-    float last_x = 0.0f, last_y = 0.0f, last_z = 0.0f;
-    uint8_t steps = 5;
-    uint16_t step_ms = 200;
+    float last_x = 0.0f, last_y = 0.0f, last_z = 0.2f;
+    uint8_t steps = 50;
+    uint16_t step_ms = 400;
+    move_to(0.05f,0.25f,0.20f,2000);
+    vTaskDelay(2000);
+    // k230_target_pos.x = 0.1f;
+    // k230_target_pos.z = 0.0f;
+    // k230_target_pos.x = 0.2f;
     k230_comm_status = K230_RECEIVED_OK;
     for(;;)
     {
         if(k230_comm_status == K230_RECEIVED_OK)
         {
+
             k230_comm_status = K230_IDLE;
-            arm.target_pos.x = (float)k230_target_pos.x;
-            arm.target_pos.y = (float)k230_target_pos.y;
-            arm.target_pos.z = (float)k230_target_pos.z;
+            arm.target_pos.x =    (float)k230_target_pos.x;
+            arm.target_pos.y =    (float)k230_target_pos.y;
+            arm.target_pos.z =    (float)k230_target_pos.z;
             line_interp(last_x, last_y, last_z,
                         arm.target_pos.x, arm.target_pos.y, arm.target_pos.z,
                         steps, step_ms);
-            last_x = arm.target_pos.x;
-            last_y = arm.target_pos.y;
-            last_z = arm.target_pos.z;
+            last_x = k230_target_pos.x;
+            last_y = k230_target_pos.y;
+            last_z = k230_target_pos.z;
+            // line_interp(0.05f,0.2f,0.2f,-0.05f,0.2f,0.2f,500,4);
+            // vTaskDelay(100);
+            // line_interp(-0.05f,0.2f,0.2f,-0.05f,0.2f,0.1f,500,4);
+            // vTaskDelay(100);
+            // line_interp(-0.05f,0.2f,0.1f,0.05f,0.2f,0.1f,500,4);
+            //  vTaskDelay(100);
+            // line_interp(0.05f,0.2f,0.1f ,0.05f,0.2f,0.2f,500,4);
+            // vTaskDelay(100);
         }
     }
 } 
 
 void requirement_3(void)
 {
+    arm_init();
+    vTaskDelay(1000);
     K230_UART_Init();
+    k230_comm_status = K230_RECEIVED_OK;
     for(;;)
     {
         if(k230_comm_status == K230_RECEIVED_OK && arm_state == ARM_IDLE)
@@ -148,7 +165,7 @@ void requirement_3(void)
             arm.target_pos.z = (float)k230_target_pos.z;
             k230_comm_status = K230_IDLE;
             arm_state = ARM_MOVE_TO_TARGET;
-            move_to(arm.target_pos.x, arm.target_pos.y, arm.target_pos.z, 2000);
+            move_to(k230_target_pos.x, k230_target_pos.y, k230_target_pos.z, 2000);
             arm_state = ARM_ARRIVED;
             arm_state = ARM_IDLE;
         }
@@ -163,7 +180,7 @@ void arm_init(void)
     arm.motor[0].id = 0;
     arm.motor[1].id = 1;
     arm.motor[2].id = 2;
-    set_angles(180,0, 0, 1000);
+    set_angles(180,90, 0, 1000);
 }
 
 /* 将三个关节角度(度)写入舵机结构体并发送 */
@@ -220,7 +237,7 @@ static void update_linear_trajectory(LinearTrajectory3D *traj,
 
 static void line_interp(float x0, float y0, float z0,
                         float x1, float y1, float z1,
-                        uint8_t steps, uint16_t step_time)
+                        uint16_t steps, uint16_t step_time)
 {
     LinearTrajectory3D traj;
     uint32_t elapsed_ms = 0;
@@ -253,6 +270,7 @@ static void line_interp(float x0, float y0, float z0,
         z = linear_traj_eval(&traj.lz, sample_time_ms);
 
         move_to(x, y, z, move_time_ms);
+        vTaskDelay(step_time);
         elapsed_ms = next_elapsed_ms;
     }
 }

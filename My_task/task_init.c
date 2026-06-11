@@ -12,7 +12,7 @@ void task_init()
 
 	xTaskCreate(requirement,
        "requirement",
-        512,
+        2048,
         NULL,
         4,
         &requirement_Handle);
@@ -25,7 +25,7 @@ void task_init()
 
 //	xTaskCreate(requirement_2,
 //        "requirement_2",
-//         256,
+//         2048,
 //         NULL,
 //         4,
 //         &requirement_2_Handle);

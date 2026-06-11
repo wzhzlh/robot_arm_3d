@@ -5,6 +5,7 @@
             "name": "Debug",
             "displayName": "Debug",
             "description": "Debug build with -O0 -g3",
+            "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/Debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
@@ -15,6 +16,7 @@
             "name": "Release",
             "displayName": "Release",
             "description": "Release build with -Os -g0",
+            "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/Release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",

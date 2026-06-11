@@ -30,9 +30,9 @@ void K230_ParseFrame(K230_TargetPosTypeDef *buf, uint16_t len)
         k230_comm_status = K230_RECEIVE_ERROR;
         return;
     }
-        k230_target_pos.x = buf->x;
-        k230_target_pos.y = buf->y;
-        k230_target_pos.z = buf->z;
+        k230_target_pos.x = -buf->y*0.001f;
+        k230_target_pos.y = buf->x*0.001;
+        k230_target_pos.z = buf->z*0.001;
         k230_comm_status = K230_RECEIVED_OK;
     }
 }

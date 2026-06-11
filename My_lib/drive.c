@@ -3,9 +3,9 @@
 
 static const float rad_to_angle = 57.2957795f;
 
-float L1 = 0.0555f;
-float L2 = 0.0700f;
-float L3 = 0.1040f;
+float L1 = 0.05550f;
+float L2 = 0.20000f;
+float L3 = 0.15149f;
 
 float clamp(float val, float min, float max)
 {
@@ -41,9 +41,9 @@ void IK_2D(ServoBus_t *robot_arm)
 
 void IK_3D(ServoBus_t *robot_arm)
 {
-    float x = robot_arm->target_pos.x;
-    float y = robot_arm->target_pos.y;
-    float theta1_target_deg = atan2f(y, x) * rad_to_angle;
+    float theta1_target_deg = atan2f(robot_arm->target_pos.y, robot_arm->target_pos.x) * rad_to_angle;
+    if (theta1_target_deg < 0.0f)
+        theta1_target_deg += 360.0f;
     robot_arm->motor[0].motor_tx_pos = theta1_target_deg;
     IK_2D(robot_arm);
 }
@@ -67,7 +67,7 @@ target_t FK_3D(ServoBus_t *robot_arm)
 
 uint16_t angle_to_pwm_id0(float angle)
 {
-    angle = clamp(angle, 0.0f, 270.0f);
+    angle = clamp(angle, 0.0f, 360.0f);
     return (uint16_t)(angle * 7.407f + 500.0f);
 }
 
