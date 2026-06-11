@@ -82,30 +82,30 @@ void requirement_1(void)
 {
 
     arm_init();
-    vTaskDelay(500);
+    vTaskDelay(1100);
 
-    set_angles(0.0f, 0.0f, 0.0f, 1000);
-    vTaskDelay(1000);
+    set_angles(0.0f, 90.0f, 0.0f, 1000);
+    vTaskDelay(1100);
 
-    set_angles(270.0f, 0.0f, 0.0f, 2000);
-    vTaskDelay(1500);
-    ServoBus_ReadAngle(1);
-    set_angles(0.0f, 0.0f, 0.0f, 2000);
-    vTaskDelay(1500);
-
-    set_angles(0.0f, 180.0f, 0.0f, 2000);
-    vTaskDelay(2500);
+    set_angles(270.0f, 90.0f, 0.0f, 2000);
+    vTaskDelay(2100);
 
     set_angles(0.0f, 0.0f, 0.0f, 2000);
-    vTaskDelay(2500);
+    vTaskDelay(2100);
+
+    set_angles(0.0f, 180.0f, 0.00000f, 2000);
+    vTaskDelay(2100);
+
+    set_angles(0.0f, 0.0f, 0.0f, 2000);
+    vTaskDelay(2100);
 
     set_angles(0.0f, 0.0f, -90.0f, 2000);
-    vTaskDelay(1500);
+    vTaskDelay(2100);
     set_angles(0.0f, 0.0f, 90.0f, 2000);
-    vTaskDelay(1500);
+    vTaskDelay(2100);
     
     set_angles(0.0f, 0.0f, 0.0f, 2000);
-    vTaskDelay(1500);
+    vTaskDelay(2100);
     // vTaskDelete(NULL);
 }
 
@@ -132,13 +132,28 @@ void requirement_2(void)
             arm.target_pos.x =    (float)k230_target_pos.x;
             arm.target_pos.y =    (float)k230_target_pos.y;
             arm.target_pos.z =    (float)k230_target_pos.z;
-            line_interp(last_x, last_y, last_z,
-                        arm.target_pos.x, arm.target_pos.y, arm.target_pos.z,
-                        steps, step_ms);
-            last_x = k230_target_pos.x;
-            last_y = k230_target_pos.y;
-            last_z = k230_target_pos.z;
-            // line_interp(0.05f,0.2f,0.2f,-0.05f,0.2f,0.2f,500,4);
+           // move_to(k230_target_pos.x,k230_target_pos.y,k230_target_pos.z,2000);
+           //  vTaskDelay(2100);
+           //  last_x = k230_target_pos.x;
+           //  last_y = k230_target_pos.y;
+           //  last_z = k230_target_pos.z;
+           //
+           //          line_interp(k230_target_pos.x,k230_target_pos.y,k230_target_pos.z,
+           //              k230_target_pos.x-0.10f,k230_target_pos.y,k230_target_pos.z,
+           //             500,4 );
+           //
+           //          line_interp(k230_target_pos.x-0.10f,k230_target_pos.y,k230_target_pos.z,
+           //       k230_target_pos.x=0.10f,k230_target_pos.y,k230_target_pos.z-0.10f,
+           //    500,4 );
+           //
+           //          line_interp(k230_target_pos.x,k230_target_pos.y,k230_target_pos.z-0.10f,
+           //  k230_target_pos.x,k230_target_pos.y,k230_target_pos.z-0.10f,
+           //    500,4 );
+           //
+           //          line_interp(k230_target_pos.x,k230_target_pos.y,k230_target_pos.z-0.10f,
+           //  k230_target_pos.x,k230_target_pos.y,k230_target_pos.z,
+           //    500,4 );
+           //  // line_interp(0.05f,0.2f,0.2f,-0.05f,0.2f,0.2f,500,4);
             // vTaskDelay(100);
             // line_interp(-0.05f,0.2f,0.2f,-0.05f,0.2f,0.1f,500,4);
             // vTaskDelay(100);
@@ -156,6 +171,10 @@ void requirement_3(void)
     vTaskDelay(1000);
     K230_UART_Init();
     k230_comm_status = K230_RECEIVED_OK;
+    move_to(0, 0, 0.3f, 2000);
+    k230_target_pos.x = 0.06f;
+    k230_target_pos.y = 0.27f;
+    k230_target_pos.z = 0.1f;
     for(;;)
     {
         if(k230_comm_status == K230_RECEIVED_OK && arm_state == ARM_IDLE)
@@ -166,6 +185,23 @@ void requirement_3(void)
             k230_comm_status = K230_IDLE;
             arm_state = ARM_MOVE_TO_TARGET;
             move_to(k230_target_pos.x, k230_target_pos.y, k230_target_pos.z, 2000);
+            vTaskDelay(2100);
+    //
+    //         line_interp(k230_target_pos.x,k230_target_pos.y,k230_target_pos.z,
+    //             k230_target_pos.x,k230_target_pos.y+0.10f,k230_target_pos.z,
+    //            500,4 );
+    //
+    //         line_interp(k230_target_pos.x,k230_target_pos.y+0.10f,k230_target_pos.z,
+    //      k230_target_pos.x,k230_target_pos.y+0.10f,k230_target_pos.z-0.10f,
+    //   500,4 );
+    //
+    //         line_interp(k230_target_pos.x,k230_target_pos.y+0.10f,k230_target_pos.z-0.10f,
+    // k230_target_pos.x,k230_target_pos.y,k230_target_pos.z-0.10f,
+    //   500,4 );
+    //
+    //         line_interp(k230_target_pos.x,k230_target_pos.y,k230_target_pos.z-0.10f,
+    // k230_target_pos.x,k230_target_pos.y,k230_target_pos.z,
+    //   500,4 );
             arm_state = ARM_ARRIVED;
             arm_state = ARM_IDLE;
         }
